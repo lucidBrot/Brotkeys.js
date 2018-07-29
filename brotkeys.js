@@ -27,6 +27,7 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 		this.fmode_caseInsensitivity = true;
 		this.interrupt_caseInsensitivity = true;
 		this.word_caseInsensitivity = true;
+		this.ignore_ShiftAndCapslock_inWordMode = true; 
 		
 		this.hotkeys_init();
 	}
@@ -137,6 +138,12 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 		this.callNotifyMeFunction(this.current_link_word, notify_words_possible);
 		
 		if(counter == 0){
+			if(this.ignore_ShiftAndCapslock_inWordMode && (key=="shift" || key=="capslock")){
+				// ignore shift or capslock key if we're in word mode and it was not specified in the remaining possible words
+				this.log_verbose("ignoring "+key+" because there are no possible matches containing it and this.ignore_ShiftAndCapslock_inWordMode equals true");
+				this.current_link_word = this.current_link_word.slice(0, -(key.length)); // remove last character again
+				return;
+			}
 			this.log_verbose(key+" not found in available word options. Leaving f_mode.");
 			this.leave_f_mode();
 			return;

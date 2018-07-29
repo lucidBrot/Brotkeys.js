@@ -165,9 +165,30 @@ The first line is whether `F` and `f` both trigger F_Mode.
 The second line is whether characters in interruptMap are case insensitive.
 The third line is whether capitalization in words matters. True if it does not matter.
 
+See also further below about an obscure setting called `ignore_ShiftAndCapslock_inWordMode`.
+
 ## Implementation Details
 
-If you want to know what's going on, without reading the actual code.
+If you want to know what's going on, without reading the actual code.  
+
+### ignore_ShiftAndCapslock_inWordMode
+
+There is also the option `this.ignore_ShiftAndCapslock_inWordMode = true`. If it is enabled, Brotkeys.js ignores entered shift and capslock keys themselves while within a word. Otherwise, `eXample` and `example` would not be the same word, even with case insensitivity on - because it would be `eshiftXample` internally. And I don't think you could capture that without writing your own code instead of using Brotkeys.js. But you're welcome to try what happens if you set this to false.  
+This is where that setting is used internally: when we know that there was no word matching the latest `key`:
+
+```javascript
+if(counter == 0){
+			if(this.ignore_ShiftAndCapslock_inWordMode && (key=="shift" || key=="capslock")){
+				// ignore shift or capslock key if we're in word mode and it was not specified in the remaining possible words
+				this.log_verbose("ignoring "+key+" because there are no possible matches containing it and this.ignore_ShiftAndCapslock_inWordMode equals true");
+				this.current_link_word = this.current_link_word.slice(0, -(key.length)); // remove last character again
+				return;
+			}
+			this.log_verbose(key+" not found in available word options. Leaving f_mode.");
+			this.leave_f_mode();
+			return;
+		}
+```
 
 ### Construction
 
