@@ -209,6 +209,7 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 	}
 	
 	// Automatic generation of link hints in f-mode
+	
 	// Param: generationTarget can be any of the HotkeyManager.GenerationEnum, bitwise OR'ed together
 	// If a target is of tag type <a> (anchor) AND of class "BKH", it will be treated only once.
 	autogenerate(generationTarget){
@@ -222,4 +223,11 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 				break;
 		}
 	}
+	/* Next Todos:
+		function that takes an element and tells whether it is tagged
+		function that takes an element and tells whether it is an anchor
+		function that takes an element and adds a hotkey link hint
+			function that generates a link hint based on easily-accessible characters still available (even after the manual loading that might have happened before)
+	*/
+	
 }
