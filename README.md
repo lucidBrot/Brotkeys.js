@@ -7,6 +7,7 @@ Brotkeys builds upon [jaywcjaylove's hotkeys](https://github.com/jaywcjlove/hotk
 * listen for specific words
 * set a character that has to preceed any input
 * be informed on start and end of user input, or at every character
+* automatically generate an "open link" action for every anchor tag
 
 ## Usage
 
