@@ -29,6 +29,11 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 		this.word_caseInsensitivity = true;
 		this.ignore_ShiftAndCapslock_inWordMode = true; 
 		
+		// fake enum for adding more options later, for autogeneration of link hints
+		// never use 0 in enums, since it could compare as equal to null or undefined or false
+		this.GenerationEnum = Object.freeze({"tag_anchor":0b01,"class_tagged":0b10});
+		this.generationClassTag = "BKH"; // default for class_tagged is the class "BKH", but this could be easily changed
+		
 		this.hotkeys_init();
 	}
 	
@@ -62,7 +67,7 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 	disable(){ // disables all reactions to key presses. Call enable_f_mode() with either true or false to re-enable again.
 		this.mode = this.ModeEnum.all_disabled;
 	}
-	// The name says "enable f mode", but the internal workings are actually just setting fmode to always be on.
+	// The name says "enable f mode", but the internal workings are actually just setting fmode to always be on if it is disabled.
 	// enabled = true means that the first character will not be part of the word but instead launch the listening for the word
 	enable_f_mode(enabled){ // true by default
 		if(enabled){
@@ -201,5 +206,20 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 		hotkeys('*', function(event, handler){that.hotkeys_handler_on_key_press(event, handler, that)});
 
 		this.current_link_word="";
+	}
+	
+	// Automatic generation of link hints in f-mode
+	// Param: generationTarget can be any of the HotkeyManager.GenerationEnum, bitwise OR'ed together
+	// If a target is of tag type <a> (anchor) AND of class "BKH", it will be treated only once.
+	autogenerate(generationTarget){
+		// at time of writing this (24.08.2018), the only options are class_tagged (with class name BKH) and tag_anchor
+		switch(generationTarget){
+			case this.GenerationEnum.class_tagged:
+				break;
+			case this.GenerationEnum.tag_anchor:
+				break;
+			default:
+				break;
+		}
 	}
 }
