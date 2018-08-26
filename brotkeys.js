@@ -283,7 +283,6 @@ class HotkeyManager {
         // noinspection EqualityComparisonWithCoercionJS
         if (this._generateLinkHintText_lastWordGenerated != undefined){
             word = this._generateLinkHintText_lastWordGenerated;
-            this.log_verbose("stored word length: "+word.length+"\nactually needed min-length: "+min_length);
 
             // continue later at the position where this stored word left off
 			// It's a surefire wrong guess, but it's a good enough guess (close enough to actual values)
@@ -361,7 +360,6 @@ class HotkeyManager {
 		// deeper recursive calls try the rightmost
 		if(initial_attempt.length <= 1){console.log("what are you doing in this case?");}
 		for(let left_digit = initial_attempt[0]; left_digit < letters.length; left_digit++) {
-			console.log(left_digit+"  "+letters[left_digit]); //TODO: remove this line
             let new_is_ok_word = (function(left_digit){return function (word_array) {
                 if(word_array.length === 0){
                 	console.log("word_array had length 0, so it's trivially an ok word.\n word_array: "+word_array);
@@ -370,8 +368,6 @@ class HotkeyManager {
                 // array with left digit as the leftmost entry of the upper call
                 let expanded_word_array = word_array.slice();
                 expanded_word_array.unshift(left_digit);
-                console.log("unshifted word: "+expanded_word_array);
-                console.log("  is ok: "+is_ok_word(expanded_word_array));
                 return is_ok_word(expanded_word_array);
             };})(left_digit); // hack to enable function declaration within the for loop.
 			// above is basically just     function new_is_ok_word (word_array) { ... }
