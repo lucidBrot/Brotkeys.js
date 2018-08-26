@@ -221,29 +221,33 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 	autogenerate(generationTarget) {
         // fetch list of elements to be worked on
         let elems_to_gen;
+        let g;
         fetching_elems:
         {
 			// every bit corresponds to one flag. Test if the relevant bit is set.
 			// noinspection JSBitwiseOperatorUsage
-            if (generationTarget & this.GenerationEnum.class_tagged === this.GenerationEnum.class_tagged) {
+            if ((generationTarget & this.GenerationEnum.class_tagged) === this.GenerationEnum.class_tagged) {
 				elems_to_gen = document.getElementsByClassName(this.generationClassTag);
+				g = "classes tagged "+this.generationClassTag;
 				break fetching_elems;
 			}
 			// noinspection JSBitwiseOperatorUsage
-            if (generationTarget & this.GenerationEnum.tag_anchor === this.GenerationEnum.tag_anchor) {
+            if ((generationTarget & this.GenerationEnum.tag_anchor) === this.GenerationEnum.tag_anchor) {
                 elems_to_gen = document.getElementsByTagName("a");
+                g = "anchor elements";
                 break fetching_elems;
 			}
 			/*default:*/ break fetching_elems;
     	}
     	// fetching elements done. They are now in elems_to_gen, which is a HTMLCollection
+		this.log_verbose("Autogenerating for the "+g+". ");
 
-        const num_elems_to_gen_for = elems_to_gen.length + this.wordMap.length; // need to fit at least this many link hints
+        const num_elems_to_gen_for = elems_to_gen.length + this.wordMap.size; // need to fit at least this many link hints
 		// For each element, create a tag
         [...elems_to_gen].forEach(function(item){
 			// noinspection JSPotentiallyInvalidUsageOfClassThis
             let link_hint_text = this.generateLinkHintText(item, num_elems_to_gen_for);
-			this.addLinkHint(item, link_hint_text);
+            this.addLinkHint(item, link_hint_text);
 		}.bind(this));
 	}
 
@@ -259,9 +263,9 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
         // compute the minimal number of letters needed
         const letters = homerow_chars.concat(other_okay_chars);
         // {num_letters}^{min_length} = num_possible_words  ===>  min_length = log_{num_letters}{num_possible_words}
-        const min_length = Math.log(num_elems_to_gen_for)/Math.log(letters.length);
-        // compute an available word of minimal length, favoring the homerow chars
+        const min_length = Math.ceil(Math.log(num_elems_to_gen_for)/Math.log(letters.length));
 
+        // compute an available word of minimal length, favoring the homerow chars.
         // position tells us which letter we're modifying. We modify the rightmost letter first.
         let position = min_length-1; let attempt = 0;
 
@@ -279,14 +283,14 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
             }
         } else {
             // start at the start
-            word = Array(min_length).fill(letters[0]);
+            word = Array(min_length).fill(0);
         }
 
         // combine the first word into a string
-        let w = ""; word.forEach(letter_index => w.concat(letters[letter_index]));
+        let w = ""; word.forEach(letter_index => w=w.concat(letters[attempt]));
 
         // then try until one is available
-        while (w in unavailable_words) {
+        while (unavailable_words.includes(w)) {
             if(attempt >= letters.length){
                 // no more options for this position, try the next position
                 position--; attempt = 0;
@@ -304,17 +308,25 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 
             // compute word from the selected letters by joining them
             w="";
-            word.forEach(letter_index => w.concat(letters[letter_index]));
+            word.forEach(letter_index => w=w.concat(letters[letter_index]));
         }
         // keep track of the last word generated, in case there are many
         this._generateLinkHintText_lastWordGenerated = word;
 
+        // add the word to the unavailable words, but don't add an action yet
+		this.wordMap.set(w,undefined);
+
         // and return the generated word
         return String(w);
     }
+
+    addLinkHint(element, linkHint){
+		element.text += " [" + linkHint + "] ";
+	}
 	/* Next Todos:
 		addLinkHint(element, text)
 		    inject the needed html (and css)
+		    <script src="./libs/lucidbrot_styleswapper/styleswapper.js" defer></script>
 		    <kbd class="LB-SS-swap1 eric-reverse">PR</kbd>
 		    see keys.js for the relevant css
 	*/
