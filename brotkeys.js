@@ -243,11 +243,15 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 		this.log_verbose("Autogenerating for the "+g+". ");
 
         const num_elems_to_gen_for = elems_to_gen.length + this.wordMap.size; // need to fit at least this many link hints
+		let brotkeys_elem_id = 0;
 		// For each element, create a tag
         [...elems_to_gen].forEach(function(item){
 			// noinspection JSPotentiallyInvalidUsageOfClassThis
-            let link_hint_text = this.generateLinkHintText(item, num_elems_to_gen_for);
-            this.addLinkHint(item, link_hint_text);
+            let link_hint_text = this.generateLinkHintText(item, num_elems_to_gen_for); // generate link hint
+            this.wordMap.set(link_hint_text,  // current value in wordMap is there, but action is undefined
+				"document.querySelector(\"a[brotkeysid='"+brotkeys_elem_id+"']\").click()"); // set up action
+            this.addLinkHint(item, link_hint_text); // add the graphics
+            brotkeys_elem_id++;
 		}.bind(this));
 	}
 
@@ -329,6 +333,8 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 		    <script src="./libs/lucidbrot_styleswapper/styleswapper.js" defer></script>
 		    <kbd class="LB-SS-swap1 eric-reverse">PR</kbd>
 		    see keys.js for the relevant css
+
+
 	*/
 	
 }
