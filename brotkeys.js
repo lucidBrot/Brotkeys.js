@@ -336,6 +336,56 @@ class HotkeyManager {
         return String(w);
     }
 
+    // finds a word_array of length of the initial attempt, or null
+	// avoids any options "below" the initial attempt
+    recGenWordGo(letters, not_ok_words, initial_attempt){
+		// string from array
+        function word(word_array){let w="";word_array.forEach(letter_index => w=w.concat(letters[attempt]));return w;};
+        // boolean
+		function is_ok_word(word_array){
+			return (!not_ok_words.includes(word(word_array)));
+		}
+
+        if(initial_attempt.length <= 0){return null;}
+		if(is_ok_word(initial_attempt)){return initial_attempt;}
+		return this.recGenWord(letters, initial_attempt, is_ok_word);
+	}
+
+    // returns the word array, if found, or null
+    recGenWord (/*char_array*/ letters, /*int_array*/ initial_attempt, /*function*/ is_ok_word){
+    	// helper functions
+    	function word(word_array){let w="";word_array.forEach(letter_index => w=w.concat(letters[attempt]));return w;};
+		// case : available word can be found by just modifying the last digit
+		let last_digit; let found_word = null;
+        let current_attempt = initial_attempt;
+		for(last_digit = initial_attempt[initial_attempt.length-1]; last_digit < letters.length; last_digit++){
+			current_attempt[current_attempt.length -1] = last_digit;
+			if(is_ok_word(current_attempt)){found_word = current_attempt; break;}
+		}
+		if(found_word !== null){return found_word;}
+		// case : we need to try all options of the left digits for all options of the rightmost digit
+		// deeper recursive calls try the rightmost
+		for(let left_digit = initial_attempt[initial_attempt.length-2]; left_digit < letters.length; left_digit++) {
+            let new_is_ok_word = (function(left_digit){return function (word_array) {
+                if(word_array.length === 0){return true;}
+                // array with left digit as the leftmost entry of the upper call
+                let expanded_word_array = word_array.slice();
+                expanded_word_array.unshift(left_digit);
+                return is_ok_word(expanded_word_array);
+            };})(left_digit); // hack to enable function declaration within the for loop.
+			// above is basically just     function new_is_ok_word (word_array) { ... }
+
+			// find working word if the leftmost digit were fixed to left_digit
+			// by recursing to only the right part and then prepend the left part again in the end.
+            found_word = this.recGenWord(letters, initial_attempt.slice(1), new_is_ok_word);
+            if(found_word !== null){
+            	return found_word.unshift(left_digit);
+			}
+        }
+        return null; // not found
+
+	}
+
     addLinkHint(element, linkHint){
 		element.text += " [" + linkHint + "] ";
 	}
