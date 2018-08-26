@@ -295,47 +295,25 @@ class HotkeyManager {
             word = Array(min_length).fill(0);
         }
 
-        // combine the first word into a string
-        let w = ""; // noinspection JSUnusedLocalSymbols
-        word.forEach(letter_index => w=w.concat(letters[attempt]));
-
-        // then try until one is available
-        while (unavailable_words.includes(w)) {
-            if(attempt >= letters.length){
-                // no more options for this position, try the next position
-                position--; attempt = 0;
-                if(position<0){
-                    this.log_error("SOMETHING IS WRONG! Could not find enough words as should be available.");
-                    break;
-                }
-
-                /* TODO:
-                	If nothing found yet, we are here.
-                	Then move position one to the left, and set everything to the right of it to 0 again.
-                	Increment what is at position by one (unless that would be too large)
-                	And continue the same cycle again.
-                	This is best done with recursion, however.
-                 */
-            }
-
-            // try next combination of letters
-            word[position] = attempt;
-
-            // increase counter
-            attempt++;
-
-            // compute word from the selected letters by joining them
-            w="";
-            word.forEach(letter_index => w=w.concat(letters[letter_index]));
+        function to_word(word_array){let w="";// noinspection JSUnusedLocalSymbols
+            word_array.forEach(letter_index => w = w.concat(letters[attempt]));
+            return w;
         }
-        // keep track of the last word generated, in case there are many
+
+		let initial_guess = word.slice();
+        word = this.recGenWordGo(letters, unavailable_words, initial_guess);
+        if(word === null){
+        	this.log_error("Failed to generate a link hint of length "+initial_guess.length+" when only considering words 'smaller' than "+to_word(initial_guess));
+		}
+
+        // keep track of the last word array generated, in case there are many
         this._generateLinkHintText_lastWordGenerated = word;
 
         // add the word to the unavailable words, but don't add an action yet
 		this.wordMap.set(w,undefined);
 
         // and return the generated word
-        return String(w);
+        return String(to_word(word));
     }
 
     // finds a word_array of length of the initial attempt, or null
