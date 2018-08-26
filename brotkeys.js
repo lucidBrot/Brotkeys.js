@@ -1,5 +1,6 @@
 // (c) Eric Mink aka LucidBrot 2018
-class HotkeyManager { // more than one instance will probably mess with hotkey library scopes. This class is just to not poison the JS scope with variable names.
+class HotkeyManager {
+    // more than one instance will probably mess with hotkey library scopes. This class is just to not poison the JS scope with variable names.
 	
 	/*
 		wordMap: Map of [strings that exist on the page, functions as reaction on the string]
@@ -33,6 +34,7 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 		// never use 0 in enums, since it could compare as equal to null or undefined or false
 		this.GenerationEnum = Object.freeze({"tag_anchor":0b01,"class_tagged":0b10});
 		this.generationClassTag = "BKH"; // default for class_tagged is the class "BKH", but this could be easily changed
+        this.AUTOGEN_LINKHINT_ATTRIBUTE = "brotkeysid";
 		
 		this.hotkeys_init();
 	}
@@ -245,11 +247,14 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
         const num_elems_to_gen_for = elems_to_gen.length + this.wordMap.size; // need to fit at least this many link hints
 		let brotkeys_elem_id = 0;
 		// For each element, create a tag
-        [...elems_to_gen].forEach(function(item){
+        [...elems_to_gen].forEach(function(item, index){
 			// noinspection JSPotentiallyInvalidUsageOfClassThis
+			const curr_bk_elem_id = brotkeys_elem_id;
             let link_hint_text = this.generateLinkHintText(item, num_elems_to_gen_for); // generate link hint
-            this.wordMap.set(link_hint_text,  // current value in wordMap is there, but action is undefined
-				"document.querySelector(\"a[brotkeysid='"+brotkeys_elem_id+"']\").click()"); // set up action
+			item.setAttribute(this.AUTOGEN_LINKHINT_ATTRIBUTE, index); // give it a unique id based on index
+            let f = new Function("document.querySelector(\"a["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+curr_bk_elem_id+"']\").click();");
+            this.wordMap.set(link_hint_text,  // current value in wordMap is there, but action is undefined. Set up action.
+				f);
             this.addLinkHint(item, link_hint_text); // add the graphics
             brotkeys_elem_id++;
 		}.bind(this));
