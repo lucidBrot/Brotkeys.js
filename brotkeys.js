@@ -306,6 +306,14 @@ class HotkeyManager {
                     this.log_error("SOMETHING IS WRONG! Could not find enough words as should be available.");
                     break;
                 }
+
+                /* TODO:
+                	If nothing found yet, we are here.
+                	Then move position one to the left, and set everything to the right of it to 0 again.
+                	Increment what is at position by one (unless that would be too large)
+                	And continue the same cycle again.
+                	This is best done with recursion, however.
+                 */
             }
 
             // try next combination of letters
