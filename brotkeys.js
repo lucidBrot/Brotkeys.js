@@ -74,18 +74,18 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 			this.leave_f_mode = function(){
 				this.current_link_word = "";
 				this.mode = this.ModeEnum.pre_f_mode;
-			}
+			};
 			this.leave_f_mode();
 		} else {
 			this.leave_f_mode = function(){
 				this.current_link_word = "";
 				this.mode = this.ModeEnum.f_mode;
-			}
+			};
 			this.leave_f_mode();
 		}
 	}
 	set_f_mode_character(character){
-		if(character.length != 1){this.log_error("set_f_mode_character("+character+") failed because it is not a single character");}
+		if(character.length !== 1){this.log_error("set_f_mode_character("+character+") failed because it is not a single character");}
 		else {
 			this.F_MODE_PREFIX_CHAR = character;
 		}
@@ -95,7 +95,7 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 			this.notifyMeFunc = undefined;
 			return;
 		}
-		if(!(notifyFunc.length==2)){this.log_error("NotifyMe function does not accept the right number of parameters")};
+		if(!(notifyFunc.length===2)){this.log_error("NotifyMe function does not accept the right number of parameters")};
 		this.notifyMeFunc = notifyFunc;
 	}
 	callNotifyMeFunction(current_word, remaining_words_possible){
@@ -142,8 +142,8 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 		// notify before potentially executing
 		this.callNotifyMeFunction(this.current_link_word, notify_words_possible);
 		
-		if(counter == 0){
-			if(this.ignore_ShiftAndCapslock_inWordMode && (key=="shift" || key=="capslock")){
+		if(counter === 0){
+			if(this.ignore_ShiftAndCapslock_inWordMode && (key==="shift" || key==="capslock")){
 				// ignore shift or capslock key if we're in word mode and it was not specified in the remaining possible words
 				this.log_verbose("ignoring "+key+" because there are no possible matches containing it and this.ignore_ShiftAndCapslock_inWordMode equals true");
 				this.current_link_word = this.current_link_word.slice(0, -(key.length)); // remove last character again
@@ -156,7 +156,7 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 		
 		// counter equals 1
 		// it's obvious now what we will access, but we only do that if the user has typed the whole word
-		if(this.current_link_word.length == link_words[index].length){
+		if(this.current_link_word.length === link_words[index].length){
 			this.wordMap.get(this.current_link_word)(); // execute stored function
 			this.leave_f_mode();
 			return;
