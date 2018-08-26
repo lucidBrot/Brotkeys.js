@@ -293,13 +293,13 @@ class HotkeyManager {
         }
 
         function to_word(word_array){let w="";// noinspection JSUnusedLocalSymbols
-            word_array.forEach(letter_index => w = w.concat(letters[letter_index]));
+            word_array.forEach(function(letter_number, elem_index){w = w.concat(letters[letter_number])});
             return w;
         }
 
         // recursive search
 		let initial_guess = word.slice();
-        word = this.recGenWordGo(letters, unavailable_words, initial_guess);
+        word = this.recGenWordGo(letters, unavailable_words, initial_guess); // resulting word must be a word array
         if(word === null){
         	this.log_error("Failed to generate a link hint of length "+initial_guess.length+" when only considering words 'smaller' than "+to_word(initial_guess));
 		}
@@ -335,8 +335,7 @@ class HotkeyManager {
 
         if(initial_attempt.length <= 0){return null;}
 		if(is_ok_word(initial_attempt)){return initial_attempt;}
-		let result = this.recGenWord(letters, initial_attempt, is_ok_word);
-		return result;
+        return this.recGenWord(letters, initial_attempt, is_ok_word);
 	}
 
     // returns the word array, if found, or null
@@ -348,17 +347,22 @@ class HotkeyManager {
 			current_attempt[current_attempt.length -1] = last_digit;
 			if(is_ok_word(current_attempt)){found_word = current_attempt; break;}
 		}
-		if(found_word !== null){
+		if(found_word != null){
 			return found_word;
 		} else {
-			if(initial_attempt.length < 1){
+			if(initial_attempt.length <= 1){
 				return null;
 			}
 		}
 		// case : we need to try all options of the left digits for all options of the rightmost digit
 		// 	      i.e. we first try to modify only the 2 rightmost digits, then 3, etc.
 		// deeper recursive calls try the rightmost
-		if(initial_attempt.length <= 1){console.log("what are you doing in this case?");}
+		if(initial_attempt.length <= 1){
+			console.log("[W] [recGenWord] You aren't supposed to run this code.\n" +
+				"initial_attempt: "+initial_attempt+"\n" +
+				"current_attempt: "+current_attempt+"\n" +
+				"found_word: "+found_word);
+		}
 		for(let left_digit = initial_attempt[0]; left_digit < letters.length; left_digit++) {
             let new_is_ok_word = (function(left_digit){return function (word_array) {
                 if(word_array.length === 0){
@@ -375,8 +379,14 @@ class HotkeyManager {
 			// find working word if the leftmost digit were fixed to left_digit
 			// by recursing to only the right part and then prepend the left part again in the end.
             found_word = this.recGenWord(letters, initial_attempt.slice(1), new_is_ok_word);
+
             if(found_word !== null){
-            	return found_word.unshift(left_digit);
+            	found_word.unshift(left_digit);
+            	return found_word;
+			} else {
+            	// allow all numbers again after the first try, since we only block those above the first one
+				// left_digit is updated as well (in the for loop head)
+            	initial_attempt[initial_attempt.length -1]=0;
 			}
         }
         return null; // not found
