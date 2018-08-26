@@ -283,11 +283,14 @@ class HotkeyManager {
         // noinspection EqualityComparisonWithCoercionJS
         if (this._generateLinkHintText_lastWordGenerated != undefined){
             word = this._generateLinkHintText_lastWordGenerated;
-            if(!(min_length-1 >= letters.length)) {
+            this.log_verbose("stored word length: "+word.length+"\nactually needed min-length: "+min_length);
+            if(!(word[min_length-1]-1 >= letters.length)) {
                 word[min_length - 1]++;
             } else {
             	// word[min_length - 1] stays the same. that's a good enough guess.
 				// I mean, it's a surely wrong guess, but the next right guess is rather close-by.
+				// But... let's just make sure it's in the range
+				word[min_length -1] = letters.length-1;
 			}
             // continue later at the position where this stored word left off
             let i;
