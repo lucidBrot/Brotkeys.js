@@ -275,8 +275,7 @@ class HotkeyManager {
         const min_length = Math.ceil(Math.log(num_elems_to_gen_for)/Math.log(letters.length));
 
         // compute an available word of minimal length, favoring the homerow chars.
-        // position tells us which letter we're modifying. We modify the rightmost letter first.
-        let position = min_length-1; let attempt = 0;
+        let position = min_length-1;
 
         // first, set up storage and an initial guess
         let word;
@@ -284,7 +283,12 @@ class HotkeyManager {
         // noinspection EqualityComparisonWithCoercionJS
         if (this._generateLinkHintText_lastWordGenerated != undefined){
             word = this._generateLinkHintText_lastWordGenerated;
-            word[min_length-1]++;
+            if(!(min_length-1 >= letters.length)) {
+                word[min_length - 1]++;
+            } else {
+            	// word[min_length - 1] stays the same. that's a good enough guess.
+				// I mean, it's a surely wrong guess, but the next right guess is rather close-by.
+			}
             // continue later at the position where this stored word left off
             let i;
             for(i = 0; i<min_length; i++){
@@ -296,10 +300,11 @@ class HotkeyManager {
         }
 
         function to_word(word_array){let w="";// noinspection JSUnusedLocalSymbols
-            word_array.forEach(letter_index => w = w.concat(letters[attempt]));
+            word_array.forEach(letter_index => w = w.concat(letters[letter_index]));
             return w;
         }
 
+        // recursive search
 		let initial_guess = word.slice();
         word = this.recGenWordGo(letters, unavailable_words, initial_guess);
         if(word === null){
@@ -309,19 +314,25 @@ class HotkeyManager {
         // keep track of the last word array generated, in case there are many
         this._generateLinkHintText_lastWordGenerated = word;
 
+        let w = to_word(word);
+
         // add the word to the unavailable words, but don't add an action yet
 		this.wordMap.set(w,undefined);
 
         // and return the generated word
-        return String(to_word(word));
+        return String(w);
     }
 
     // finds a word_array of length of the initial attempt, or null
 	// avoids any options "below" the initial attempt
     recGenWordGo(letters, not_ok_words, initial_attempt){
+		if(initial_attempt.some(elem => ((elem >= letters.length) || elem < 0) && this.log_error("[recGenWordGo] initial attempt is not allowed to be "+elem))){
+			return null;
+		}
+
 		// string from array
         function word(word_array){let w="";// noinspection JSUnusedLocalSymbols
-            word_array.forEach(letter_index => w = w.concat(letters[attempt]));
+            word_array.forEach(letter_index => w = w.concat(letters[letter_index]));
             return w;
         }
         // boolean
@@ -331,29 +342,44 @@ class HotkeyManager {
 
         if(initial_attempt.length <= 0){return null;}
 		if(is_ok_word(initial_attempt)){return initial_attempt;}
-		return this.recGenWord(letters, initial_attempt, is_ok_word);
+		let result = this.recGenWord(letters, initial_attempt, is_ok_word);
+		return result;
 	}
 
     // returns the word array, if found, or null
     recGenWord (/*char_array*/ letters, /*int_array*/ initial_attempt, /*function*/ is_ok_word){
-
+		console.log("initial attempt: "+initial_attempt+"  "+letters[initial_attempt]);
 		// case : available word can be found by just modifying the last digit
 		let last_digit; let found_word = null;
         let current_attempt = initial_attempt;
 		for(last_digit = initial_attempt[initial_attempt.length-1]; last_digit < letters.length; last_digit++){
+			console.log("      "+last_digit+"  "+letters[last_digit]);
 			current_attempt[current_attempt.length -1] = last_digit;
 			if(is_ok_word(current_attempt)){found_word = current_attempt; break;}
 		}
-		if(found_word !== null){return found_word;}
+		if(found_word !== null){
+			return found_word;
+		} else {
+			if(initial_attempt.length < 1){
+				return null;
+			}
+		}
 		// case : we need to try all options of the left digits for all options of the rightmost digit
 		// 	      i.e. we first try to modify only the 2 rightmost digits, then 3, etc.
 		// deeper recursive calls try the rightmost
-		for(let left_digit = initial_attempt[initial_attempt.length-2]; left_digit < letters.length; left_digit++) {
+		if(initial_attempt.length <= 1){console.log("what are you doing in this case?");}
+		for(let left_digit = initial_attempt[0]; left_digit < letters.length; left_digit++) {
+			console.log(left_digit+"  "+letters[left_digit]); //TODO: remove this line
             let new_is_ok_word = (function(left_digit){return function (word_array) {
-                if(word_array.length === 0){return true;}
+                if(word_array.length === 0){
+                	console.log("word_array had length 0, so it's trivially an ok word.\n word_array: "+word_array);
+                	return true;
+                }
                 // array with left digit as the leftmost entry of the upper call
                 let expanded_word_array = word_array.slice();
                 expanded_word_array.unshift(left_digit);
+                console.log("unshifted word: "+expanded_word_array);
+                console.log("  is ok: "+is_ok_word(expanded_word_array));
                 return is_ok_word(expanded_word_array);
             };})(left_digit); // hack to enable function declaration within the for loop.
 			// above is basically just     function new_is_ok_word (word_array) { ... }
