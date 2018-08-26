@@ -91,15 +91,15 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 		}
 	}
 	setNotifyMeFunction(notifyFunc /*params: (current_word ,remaining_words_possible)*/){
-		if(notifyFunc==undefined){
+		if(notifyFunc===undefined){
 			this.notifyMeFunc = undefined;
 			return;
 		}
-		if(!(notifyFunc.length===2)){this.log_error("NotifyMe function does not accept the right number of parameters")};
+		if(!(notifyFunc.length===2)){this.log_error("NotifyMe function does not accept the right number of parameters");}
 		this.notifyMeFunc = notifyFunc;
 	}
 	callNotifyMeFunction(current_word, remaining_words_possible){
-		if(this.notifyMeFunc != undefined){
+		if(this.notifyMeFunc !== undefined){
 			this.notifyMeFunc(current_word, remaining_words_possible);
 		}
 	}
@@ -107,7 +107,7 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 		this.notify_f_mode_function = fmodeNotifyFunc;
 	}
 	callNotifyFModeFunction(entering_fmode){
-		if(this.notify_f_mode_function!=undefined){
+		if(this.notify_f_mode_function!==undefined){
 			this.notify_f_mode_function(entering_fmode);
 		}
 	}
@@ -132,7 +132,8 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 				// notify before executing
 				this.callNotifyMeFunction(this.current_link_word, notify_words_possible);
 				
-				if(func != undefined){
+				// noinspection EqualityComparisonWithCoercionJS
+                if(func != undefined){
 					this.log_verbose("The word \""+this.current_link_word+"\" is the start of a longer word. Executing it without leaving fmode.");
 					func();
 				}
@@ -159,10 +160,10 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 		if(this.current_link_word.length === link_words[index].length){
 			this.wordMap.get(this.current_link_word)(); // execute stored function
 			this.leave_f_mode();
-			return;
+
 		} else {
 			// TODO: optimization possible in case where we don't want notifications: store the obvious word
-			return;
+
 		}
 	}
 	/*boolean*/ shouldInterruptOnKey(eventkey){
@@ -175,7 +176,8 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 	}
 	/*boolean*/ shouldEnterFModeOnKey(eventkey){
 		if(this.fmode_caseInsensitivity){eventkey = eventkey.toLowerCase();}
-		return (event.key == this.F_MODE_PREFIX_CHAR);
+		// noinspection EqualityComparisonWithCoercionJS
+        return (eventkey == this.F_MODE_PREFIX_CHAR);
 	}
 	
 	hotkeys_handler_on_key_press(event, handler, that){
@@ -200,7 +202,7 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 		}
 	}
 	hotkeys_init(){
-		var that = this; // because "this" changes value in different functions, but "that" remains this.
+        const that = this; // because "this" changes value in different functions, but "that" remains this.
 		
 		// treats any capital key like a lowercase key, handles all key presses
 		hotkeys('*', function(event, handler){that.hotkeys_handler_on_key_press(event, handler, that)});
@@ -215,16 +217,18 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
     // at time of writing this (24.08.2018), the only options are class_tagged (with class name BKH) and tag_anchor
 	autogenerate(generationTarget) {
         // fetch list of elements to be worked on
-        var elems_to_gen;
+        let elems_to_gen;
         fetching_elems:
         {
 			// every bit corresponds to one flag. Test if the relevant bit is set.
-			if (generationTarget & this.GenerationEnum.class_tagged === this.GenerationEnum.class_tagged) {
+			// noinspection JSBitwiseOperatorUsage
+            if (generationTarget & this.GenerationEnum.class_tagged === this.GenerationEnum.class_tagged) {
 				elems_to_gen = document.getElementsByClassName(this.generationClassTag);
 				break fetching_elems;
 			}
-			if (generationTarget & this.GenerationEnum.tag_anchor === this.GenerationEnum.tag_anchor) {
-                elems_to_gen = document.getElementsByTagName
+			// noinspection JSBitwiseOperatorUsage
+            if (generationTarget & this.GenerationEnum.tag_anchor === this.GenerationEnum.tag_anchor) {
+                elems_to_gen = document.getElementsByTagName("a");
                 break fetching_elems;
 			}
 			/*default:*/ break fetching_elems;
@@ -233,15 +237,15 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
     	// fetching elements done. They are now in elems_to_gen, which is a HTMLCollection
 		// For each element, create a tag
 		[...elems_to_gen].forEach(function(item, index){
-			var link_hint_text = generateLinkHintText(item, index);
+			let link_hint_text = generateLinkHintText(item, index);
 			addLinkHint(item, link_hint_text);
 		});
 	}
 	/* Next Todos:
-		function that takes an element and tells whether it is tagged
-		function that takes an element and tells whether it is an anchor
-		function that takes an element and adds a hotkey link hint
-			function that generates a link hint based on easily-accessible characters still available (even after the manual loading that might have happened before)
+		generateLinkHintText(element, index)
+		    either use homerow or use text of element. I'm for homerow.
+		addLinkHint(element, text)
+		    inject the needed html (and css)
 	*/
 	
 }
