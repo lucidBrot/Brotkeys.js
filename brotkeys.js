@@ -248,12 +248,13 @@ class HotkeyManager {
 		let brotkeys_elem_id = 0;
 		// For each element, create a tag
         [...elems_to_gen].forEach(function(item, index){
-			// noinspection JSPotentiallyInvalidUsageOfClassThis
 			const curr_bk_elem_id = brotkeys_elem_id;
+            // noinspection JSPotentiallyInvalidUsageOfClassThis
             let link_hint_text = this.generateLinkHintText(item, num_elems_to_gen_for); // generate link hint
 			item.setAttribute(this.AUTOGEN_LINKHINT_ATTRIBUTE, index); // give it a unique id based on index
             let f = new Function("document.querySelector(\"a["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+curr_bk_elem_id+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
+            // noinspection JSPotentiallyInvalidUsageOfClassThis
             this.addLinkHint(item, link_hint_text); // add the graphics
             brotkeys_elem_id++;
 		}.bind(this));
@@ -295,7 +296,8 @@ class HotkeyManager {
         }
 
         // combine the first word into a string
-        let w = ""; word.forEach(letter_index => w=w.concat(letters[attempt]));
+        let w = ""; // noinspection JSUnusedLocalSymbols
+        word.forEach(letter_index => w=w.concat(letters[attempt]));
 
         // then try until one is available
         while (unavailable_words.includes(w)) {
@@ -340,7 +342,10 @@ class HotkeyManager {
 	// avoids any options "below" the initial attempt
     recGenWordGo(letters, not_ok_words, initial_attempt){
 		// string from array
-        function word(word_array){let w="";word_array.forEach(letter_index => w=w.concat(letters[attempt]));return w;};
+        function word(word_array){let w="";// noinspection JSUnusedLocalSymbols
+            word_array.forEach(letter_index => w = w.concat(letters[attempt]));
+            return w;
+        }
         // boolean
 		function is_ok_word(word_array){
 			return (!not_ok_words.includes(word(word_array)));
@@ -353,8 +358,7 @@ class HotkeyManager {
 
     // returns the word array, if found, or null
     recGenWord (/*char_array*/ letters, /*int_array*/ initial_attempt, /*function*/ is_ok_word){
-    	// helper functions
-    	function word(word_array){let w="";word_array.forEach(letter_index => w=w.concat(letters[attempt]));return w;};
+
 		// case : available word can be found by just modifying the last digit
 		let last_digit; let found_word = null;
         let current_attempt = initial_attempt;
@@ -364,6 +368,7 @@ class HotkeyManager {
 		}
 		if(found_word !== null){return found_word;}
 		// case : we need to try all options of the left digits for all options of the rightmost digit
+		// 	      i.e. we first try to modify only the 2 rightmost digits, then 3, etc.
 		// deeper recursive calls try the rightmost
 		for(let left_digit = initial_attempt[initial_attempt.length-2]; left_digit < letters.length; left_digit++) {
             let new_is_ok_word = (function(left_digit){return function (word_array) {
