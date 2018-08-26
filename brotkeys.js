@@ -233,16 +233,81 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 			}
 			/*default:*/ break fetching_elems;
     	}
-
     	// fetching elements done. They are now in elems_to_gen, which is a HTMLCollection
+
+        const num_elems_to_gen_for = elems_to_gen.length + this.wordMap.length; // need to fit at least this many link hints
 		// For each element, create a tag
-		[...elems_to_gen].forEach(function(item, index){
-			let link_hint_text = generateLinkHintText(item, index);
-			addLinkHint(item, link_hint_text);
-		});
+        [...elems_to_gen].forEach(function(item, index){
+			let link_hint_text = this.generateLinkHintText(item, num_elems_to_gen_for);
+			this.addLinkHint(item, link_hint_text);
+		}.bind(this));
 	}
+
+	// Returns an unused link hint
+	/*String*/ generateLinkHintText(element, num_elems_to_gen_for){
+        let unavailable_words = Array.from(this.wordMap, ([word, action]) => word);
+        let homerow_chars = ['f', 'j', 'd', 'f', 's', 'g', 'h', 'k','l'];
+        let other_okay_chars = ['q','w','e','r','t','u','i','o','p','v','n','m']
+        // get rid of important function keys
+        homerow_chars = homerow_chars.filter(char => char !== this.F_MODE_PREFIX_CHAR);
+        other_okay_chars = other_okay_chars.filter(char => char !== this.F_MODE_PREFIX_CHAR);
+        // compute the minimal number of letters needed
+        const letters = homerow_chars.concat(other_okay_chars);
+        // {num_letters}^{min_length} = num_possible_words  ===>  min_length = log_{num_letters}{num_possible_words}
+        const min_length = Math.log(num_elems_to_gen_for)/Math.log(letters.length);
+        // compute an available word of minimal length, favoring the homerow chars
+
+        // position tells us which letter we're modifying. We modify the rightmost letter first.
+        let position = min_length-1; let attempt = 0;
+
+        // first, set up storage and an initial guess
+        let word;
+        // word is an array which contains the character index of each letter
+        if (this._generateLinkHintText_lastWordGenerated != undefined){
+            word = this._generateLinkHintText_lastWordGenerated;
+            word[min_length-1]++;
+            // continue later at the position where this stored word left off
+            let i;
+            for(i = 0; i<min_length; i++){
+                if(word[i]>0){position=i; break;}
+            }
+        } else {
+            // start at the start
+            word = Array(min_length).fill(letters[0]);
+        }
+
+        // combine the first word into a string
+        let w = ""; word.forEach(letter_index => w.concat(letters[letter_index]));
+
+        // then try until one is available
+        while (w in unavailable_words) {
+            if(attempt >= letters.length){
+                // no more options for this position, try the next position
+                position--; attempt = 0;
+                if(position<0){
+                    this.log_error("SOMETHING IS WRONG! Could not find enough words as should be available.");
+                    break;
+                }
+            }
+
+            // try next combination of letters
+            word[position] = attempt;
+
+            // increase counter
+            attempt++;
+
+            // compute word from the selected letters by joining them
+            w="";
+            word.forEach(letter_index => w.concat(letters[letter_index]));
+        }
+        // keep track of the last word generated, in case there are many
+        this._generateLinkHintText_lastWordGenerated = word;
+
+        // and return the generated word
+        return String(w);
+    }
 	/* Next Todos:
-		generateLinkHintText(element, index)
+		generateLinkHintText(element)
 		    either use homerow or use text of element. I'm for homerow.
 		addLinkHint(element, text)
 		    inject the needed html (and css)
