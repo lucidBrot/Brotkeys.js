@@ -26,12 +26,12 @@ var interruptMap = new Map([
 manager = new HotkeyManager(wordMap, interruptMap);
 manager.interrupt_caseInsensitivity = false;
 // please notify me on entering and leaving fmode
-var notifyFModeFunc = function(entering){
+/*var notifyFModeFunc = function(entering){
 	if(entering){
 		StyleSwapper.showKeys(true, "LB-SS-swap1"); //important: this class must be defined in an _external_ css file.
 	} else {
 		StyleSwapper.showKeys(false, "LB-SS-swap1");
 	}
 };
-manager.setNotifyFModeFunction(notifyFModeFunc);
+manager.setNotifyFModeFunction(notifyFModeFunc);*/
 manager.log_prefix = "[M1] ";
