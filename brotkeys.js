@@ -210,18 +210,32 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 	
 	// Automatic generation of link hints in f-mode
 	
-	// Param: generationTarget can be any of the HotkeyManager.GenerationEnum, bitwise OR'ed together
-	// If a target is of tag type <a> (anchor) AND of class "BKH", it will be treated only once.
-	autogenerate(generationTarget){
-		// at time of writing this (24.08.2018), the only options are class_tagged (with class name BKH) and tag_anchor
-		switch(generationTarget){
-			case this.GenerationEnum.class_tagged:
-				break;
-			case this.GenerationEnum.tag_anchor:
-				break;
-			default:
-				break;
-		}
+	// Param: generationTarget can be any of the HotkeyManager.GenerationEnum, bitwise OR'ed together.
+	// If an element is of tag type <a> (anchor) AND of class "BKH", it will be treated only once, even if both are specified.
+    // at time of writing this (24.08.2018), the only options are class_tagged (with class name BKH) and tag_anchor
+	autogenerate(generationTarget) {
+        // fetch list of elements to be worked on
+        var elems_to_gen;
+        fetching_elems:
+        {
+			// every bit corresponds to one flag. Test if the relevant bit is set.
+			if (generationTarget & this.GenerationEnum.class_tagged === this.GenerationEnum.class_tagged) {
+				elems_to_gen = document.getElementsByClassName(this.generationClassTag);
+				break fetching_elems;
+			}
+			if (generationTarget & this.GenerationEnum.tag_anchor === this.GenerationEnum.tag_anchor) {
+                elems_to_gen = document.getElementsByTagName
+                break fetching_elems;
+			}
+			/*default:*/ break fetching_elems;
+    	}
+
+    	// fetching elements done. They are now in elems_to_gen, which is a HTMLCollection
+		// For each element, create a tag
+		[...elems_to_gen].forEach(function(item, index){
+			var link_hint_text = generateLinkHintText(item, index);
+			addLinkHint(item, link_hint_text);
+		});
 	}
 	/* Next Todos:
 		function that takes an element and tells whether it is tagged
