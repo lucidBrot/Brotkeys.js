@@ -315,6 +315,8 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 	/* Next Todos:
 		addLinkHint(element, text)
 		    inject the needed html (and css)
+		    <kbd class="LB-SS-swap1 eric-reverse">PR</kbd>
+		    see keys.js for the relevant css
 	*/
 	
 }
