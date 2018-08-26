@@ -284,19 +284,10 @@ class HotkeyManager {
         if (this._generateLinkHintText_lastWordGenerated != undefined){
             word = this._generateLinkHintText_lastWordGenerated;
             this.log_verbose("stored word length: "+word.length+"\nactually needed min-length: "+min_length);
-            if(!(word[min_length-1]-1 >= letters.length)) {
-                word[min_length - 1]++;
-            } else {
-            	// word[min_length - 1] stays the same. that's a good enough guess.
-				// I mean, it's a surely wrong guess, but the next right guess is rather close-by.
-				// But... let's just make sure it's in the range
-				word[min_length -1] = letters.length-1;
-			}
+
             // continue later at the position where this stored word left off
-            let i;
-            for(i = 0; i<min_length; i++){
-                if(word[i]>0){position=i; break;}
-            }
+			// It's a surefire wrong guess, but it's a good enough guess (close enough to actual values)
+			// (The logic is that this was set last time and we advance in order)
         } else {
             // start at the start
             word = Array(min_length).fill(0);
@@ -351,12 +342,10 @@ class HotkeyManager {
 
     // returns the word array, if found, or null
     recGenWord (/*char_array*/ letters, /*int_array*/ initial_attempt, /*function*/ is_ok_word){
-		console.log("initial attempt: "+initial_attempt+"  "+letters[initial_attempt]);
 		// case : available word can be found by just modifying the last digit
 		let last_digit; let found_word = null;
         let current_attempt = initial_attempt;
 		for(last_digit = initial_attempt[initial_attempt.length-1]; last_digit < letters.length; last_digit++){
-			console.log("      "+last_digit+"  "+letters[last_digit]);
 			current_attempt[current_attempt.length -1] = last_digit;
 			if(is_ok_word(current_attempt)){found_word = current_attempt; break;}
 		}
