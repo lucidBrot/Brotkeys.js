@@ -243,6 +243,9 @@ class HotkeyManager {
     	}
     	// fetching elements done. They are now in elems_to_gen, which is a HTMLCollection
 		this.log_verbose("Autogenerating for the "+g+". ");
+		
+		// load neccessary css for styleswapper
+		this.loadNeededJSCSS();
 
         const num_elems_to_gen_for = elems_to_gen.length + this.wordMap.size; // need to fit at least this many link hints
 		let brotkeys_elem_id = 0;
@@ -255,7 +258,7 @@ class HotkeyManager {
             let f = new Function("document.querySelector(\"a["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+curr_bk_elem_id+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
-            this.addLinkHint(item, link_hint_text); // add the graphics
+            this.addBeautifulLinkHint(item, link_hint_text); // add the graphics
             brotkeys_elem_id++;
 		}.bind(this));
 	}
@@ -396,6 +399,40 @@ class HotkeyManager {
     addLinkHint(element, linkHint){
 		element.text += " [" + linkHint + "] ";
 	}
+	
+	addBeautifulLinkHint(element, linkHint){
+		this.addLinkHint(element, linkHint); // temporary
+		element.innerHTML += "<kbd class=\"LB-SS-swap1 eric-reverse\">PR</kbd>"
+	}
+	
+	loadNeededJSCSS(){
+		// taken from http://www.javascriptkit.com/javatutors/loadjavascriptcss.shtml
+		
+		function loadjscssfile(filename, filetype){
+			if (filetype=="js"){ //if filename is a external JavaScript file
+				var fileref=document.createElement('script')
+				fileref.setAttribute("type","text/javascript")
+				fileref.setAttribute("src", filename)
+			}
+			else if (filetype=="css"){ //if filename is an external CSS file
+				var fileref=document.createElement("link")
+				fileref.setAttribute("rel", "stylesheet")
+				fileref.setAttribute("type", "text/css")
+				fileref.setAttribute("href", filename)
+			}
+			if (typeof fileref!="undefined")
+				document.getElementsByTagName("head")[0].appendChild(fileref)
+		}
+		/* 
+		USAGE:
+		loadjscssfile("javascript.php", "js") //dynamically load "javascript.php" as a JavaScript file
+		loadjscssfile("mystyle.css", "css") ////dynamically load and add this .css file
+		*/
+		loadjscssfile("keys.css", "css");
+		// <script src="./libs/lucidbrot_styleswapper/styleswapper.js"></script>
+		loadjscssfile("./libs/lucidbrot_styleswapper/styleswapper.js", "js");
+	}
+	
 	/* Next Todos:
 		addLinkHint(element, text)
 		    inject the needed html (and css)
