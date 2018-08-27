@@ -243,9 +243,6 @@ class HotkeyManager {
     	}
     	// fetching elements done. They are now in elems_to_gen, which is a HTMLCollection
 		this.log_verbose("Autogenerating for the "+g+". ");
-		
-		// load neccessary css for styleswapper
-		this.loadNeededJSCSS();
 
         const num_elems_to_gen_for = elems_to_gen.length + this.wordMap.size; // need to fit at least this many link hints
 		let brotkeys_elem_id = 0;
@@ -405,7 +402,7 @@ class HotkeyManager {
 		element.innerHTML += "<kbd class=\"LB-SS-swap1 eric-reverse\">PR</kbd>"
 	}
 	
-	loadNeededJSCSS(){
+	loadNeededJSCSSForStyleSwapper(){
 		// taken from http://www.javascriptkit.com/javatutors/loadjavascriptcss.shtml
 		
 		function loadjscssfile(filename, filetype){
@@ -433,14 +430,43 @@ class HotkeyManager {
 		loadjscssfile("./libs/lucidbrot_styleswapper/styleswapper.js", "js");
 	}
 	
-	/* Next Todos:
-		addLinkHint(element, text)
-		    inject the needed html (and css)
-		    <script src="./libs/lucidbrot_styleswapper/styleswapper.js" defer></script>
-		    <kbd class="LB-SS-swap1 eric-reverse">PR</kbd>
-		    see keys.js for the relevant css
-
-
-	*/
-	
 }
+
+function brotkeys_autogenerate_everything(){
+	var manager;
+	// words of the form [f]abcdefg unless enable_f_mode is set to false
+	// DONT INCLUDE AN UPPERCASE X, because that is used to immediately abort f mode here. (Because it's set below)
+	var wordMap = new Map([
+		// define some manually made input/action pairs
+		["secret", function(){window.open("https://github.com/lucidBrot/Brotkeys.js", "_self");}],
+	]);
+	// single characters that can interrupt at any time during the word-typing mode
+	var interruptMap = new Map([
+		["X", function(){manager.abort_f_mode();}], // abort fmode on fX
+		["D", function(){console.log("user disabled shortcuts"); manager.disable();}], // completely disable Brotkeys on fD
+	]);
+
+	manager = new HotkeyManager(wordMap, interruptMap);
+	manager.interrupt_caseInsensitivity = false; // case sensitive
+	
+	// load neccessary css for styleswapper (needed for showing link hints with the internal manager.addBeautifulLinkHints)
+	manager.loadNeededJSCSSForStyleSwapper();
+	
+	// please notify me on entering and leaving fmode by calling this function.
+	// This function causes the link hints to appear or disappear
+	var notifyFModeFunc = function(entering){
+		if(entering){
+			StyleSwapper.showKeys(true, "LB-SS-swap1"); //important: this class must be defined in an _external_ css file.
+		} else {
+			StyleSwapper.showKeys(false, "LB-SS-swap1");
+		}
+	};
+	manager.setNotifyFModeFunction(notifyFModeFunc);
+	manager.log_prefix = "[M1] ";
+	
+	manager.autogenerate(manager.GenerationEnum.tag_anchor); // autogenerate tags
+}
+
+/*
+	TODO: does it work with the class BHK instead of anchors?
+*/
