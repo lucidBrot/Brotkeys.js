@@ -1,6 +1,9 @@
 .LB-SS-swap1{
 	/*initially hidden, used by LucidBrot/StyleSwapper*/
-	visibility: hidden;
+	/* old version that takes space even when hidden
+	visibility: hidden;*/
+	/* new version that movest the page contents by showing buttons */
+	display: none;
 }
 kbd.eric-lightblue-black {
 	background-color: lightblue;
