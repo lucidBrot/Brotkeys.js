@@ -399,7 +399,7 @@ class HotkeyManager {
 	
 	addBeautifulLinkHint(element, linkHint){
 		this.addLinkHint(element, linkHint); // temporary
-		element.innerHTML += "<kbd class=\"LB-SS-swap1 eric-reverse\">PR</kbd>"
+		element.innerHTML += `<kbd class=\"LB-SS-swap1 eric-reverse\">${linkHint}</kbd>`
 	}
 	
 	loadNeededJSCSSForStyleSwapper(){
@@ -471,4 +471,5 @@ function brotkeys_autogenerate_everything(){
 	TODO: does it work with the class BHK instead of anchors?
 	TODO: does it work with images?
 	TODO: what happens when user types in text fields?
+	TODO: add actual link hint as text of button
 */
