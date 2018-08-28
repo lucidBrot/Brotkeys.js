@@ -23,7 +23,13 @@ class StyleSwapper {
 			target_class = '.'+target_class;
 		}
 		
-		var shown = on ? "visible" : "hidden";
-		StyleSwapper.css_getclass(target_class).style.visibility=shown;
+		// using this code means the button always takes up space, even when not visible
+		// If you want to use this code for brotkeys, remember to enable the visiblity line in keys.css
+		///var shown = on ? "visible" : "hidden";
+		///StyleSwapper.css_getclass(target_class).style.visibility=shown;
+		
+		// using this code instead means the button will not take up space when not visible and shift the whole page when activating
+		var display = on ? "inline" : "none";
+		StyleSwapper.css_getclass(target_class).style.display=display;
 	}
 }

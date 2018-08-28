@@ -471,5 +471,6 @@ function brotkeys_autogenerate_everything(){
 	TODO: does it work with the class BHK instead of anchors?
 	TODO: does it work with images?
 	TODO: what happens when user types in text fields?
-	TODO: add actual link hint as text of button
+	TODO: make link buttons take no space until visible
+	TODO: why does "abort f mode" log twice?"
 */

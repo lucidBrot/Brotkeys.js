@@ -1,6 +1,10 @@
 .LB-SS-swap1{
 	/*initially hidden, used by LucidBrot/StyleSwapper*/
+	/*use this if the visibility part of the styleswapper.js code is used
 	visibility: hidden;
+	otherwise this:*/
+	display:none;
+	
 }
 kbd.eric-lightblue-black {
 	background-color: lightblue;
