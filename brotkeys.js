@@ -477,5 +477,6 @@ function brotkeys_autogenerate_everything(){
 	TODO: what happens when user types in text fields?
 	TODO: make link buttons take no space until visible
 	TODO: why does "abort f mode" log twice?"
-	TODO: how to include styleswapper.js relative to this file?
+	TODO: run autogenerate in summaries.html
+	TODO: for (elem of document.getElementsByClassName('LB-SS-swap1')) {elem.style.display="inline";}
 */
