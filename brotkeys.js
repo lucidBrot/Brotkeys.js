@@ -403,8 +403,12 @@ class HotkeyManager {
 	}
 	
 	loadNeededJSCSSForStyleSwapper(){
-		// taken from http://www.javascriptkit.com/javatutors/loadjavascriptcss.shtml
+		// by schory, fair use, https://stackoverflow.com/a/4440632/2550406
+		// neccessary to load styleswapper relative to this file
+		var jsFileLocation = $('script[src*=brotkeys]').attr('src');  // the js file path
+		jsFileLocation = jsFileLocation.replace('brotkeys.js', '');   // the js folder path
 		
+		// taken from http://www.javascriptkit.com/javatutors/loadjavascriptcss.shtml
 		function loadjscssfile(filename, filetype){
 			if (filetype=="js"){ //if filename is a external JavaScript file
 				var fileref=document.createElement('script')
@@ -425,9 +429,9 @@ class HotkeyManager {
 		loadjscssfile("javascript.php", "js") //dynamically load "javascript.php" as a JavaScript file
 		loadjscssfile("mystyle.css", "css") ////dynamically load and add this .css file
 		*/
-		loadjscssfile("keys.css", "css");
+		loadjscssfile(jsFileLocation+"keys.css", "css");
 		// <script src="./libs/lucidbrot_styleswapper/styleswapper.js"></script>
-		loadjscssfile("./libs/lucidbrot_styleswapper/styleswapper.js", "js");
+		loadjscssfile(jsFileLocation+"/libs/lucidbrot_styleswapper/styleswapper.js", "js");
 	}
 	
 }
@@ -473,4 +477,5 @@ function brotkeys_autogenerate_everything(){
 	TODO: what happens when user types in text fields?
 	TODO: make link buttons take no space until visible
 	TODO: why does "abort f mode" log twice?"
+	TODO: how to include styleswapper.js relative to this file?
 */
