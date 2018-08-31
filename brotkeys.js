@@ -402,11 +402,10 @@ class HotkeyManager {
 		element.innerHTML += `<kbd class=\"LB-SS-swap1 eric-reverse\">${linkHint}</kbd>`
 	}
 	
-	loadNeededJSCSSForStyleSwapper(){
-		// by schory, fair use, https://stackoverflow.com/a/4440632/2550406
-		// neccessary to load styleswapper relative to this file
-		var jsFileLocation = $('script[src*=brotkeys]').attr('src');  // the js file path
-		jsFileLocation = jsFileLocation.replace('brotkeys.js', '');   // the js folder path
+
+	loadNeededJSCSSForStyleSwapping(){
+		var scripts = document.getElementsByTagName("script");
+		var jsFileLocation = scripts[scripts.length-1].src;
 		
 		// taken from http://www.javascriptkit.com/javatutors/loadjavascriptcss.shtml
 		function loadjscssfile(filename, filetype){
@@ -430,8 +429,11 @@ class HotkeyManager {
 		loadjscssfile("mystyle.css", "css") ////dynamically load and add this .css file
 		*/
 		loadjscssfile(jsFileLocation+"keys.css", "css");
-		// <script src="./libs/lucidbrot_styleswapper/styleswapper.js"></script>
-		loadjscssfile(jsFileLocation+"/libs/lucidbrot_styleswapper/styleswapper.js", "js");
+	}
+	
+	showKeys(pls_show_keys, of_class){
+		var new_display = pls_show_keys ? "inline" : "none";
+		for (elem of document.getElementsByClassName(of_class)) {elem.style.display=new_display;}
 	}
 	
 }
@@ -453,16 +455,16 @@ function brotkeys_autogenerate_everything(){
 	manager = new HotkeyManager(wordMap, interruptMap);
 	manager.interrupt_caseInsensitivity = false; // case sensitive
 	
-	// load neccessary css for styleswapper (needed for showing link hints with the internal manager.addBeautifulLinkHints)
-	manager.loadNeededJSCSSForStyleSwapper();
+	// load neccessary css for style swapping (needed for showing link hints with the internal manager.addBeautifulLinkHints)
+	manager.loadNeededJSCSSForStyleSwapping();
 	
 	// please notify me on entering and leaving fmode by calling this function.
 	// This function causes the link hints to appear or disappear
 	var notifyFModeFunc = function(entering){
 		if(entering){
-			StyleSwapper.showKeys(true, "LB-SS-swap1"); //important: this class must be defined in an _external_ css file.
+			showKeys(true, "LB-SS-swap1"); //important: this class must be defined in an _external_ css file.
 		} else {
-			StyleSwapper.showKeys(false, "LB-SS-swap1");
+			showKeys(false, "LB-SS-swap1");
 		}
 	};
 	manager.setNotifyFModeFunction(notifyFModeFunc);
@@ -479,4 +481,5 @@ function brotkeys_autogenerate_everything(){
 	TODO: why does "abort f mode" log twice?"
 	TODO: run autogenerate in summaries.html
 	TODO: for (elem of document.getElementsByClassName('LB-SS-swap1')) {elem.style.display="inline";}
+	TODO: documentation, example page
 */
