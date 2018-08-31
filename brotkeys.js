@@ -434,6 +434,7 @@ class HotkeyManager {
 	
 	showKeys(pls_show_keys, of_class){
 		var new_display = pls_show_keys ? "inline" : "none";
+		let elem;
 		for (elem of document.getElementsByClassName(of_class)) {elem.style.display=new_display;}
 	}
 	
@@ -470,9 +471,9 @@ function brotkeys_autogenerate_everything(){
 	// This function causes the link hints to appear or disappear
 	var notifyFModeFunc = function(entering){
 		if(entering){
-			showKeys(true, "LB-SS-swap1"); //important: this class must be defined in an _external_ css file.
+			this.showKeys(true, "LB-SS-swap1"); //important: this class must be defined in an _external_ css file.
 		} else {
-			showKeys(false, "LB-SS-swap1");
+			this.showKeys(false, "LB-SS-swap1");
 		}
 	};
 	manager.setNotifyFModeFunction(notifyFModeFunc);
@@ -488,6 +489,5 @@ function brotkeys_autogenerate_everything(){
 	TODO: make link buttons take no space until visible
 	TODO: why does "abort f mode" log twice?"
 	TODO: run autogenerate in summaries.html
-	TODO: for (elem of document.getElementsByClassName('LB-SS-swap1')) {elem.style.display="inline";}
 	TODO: documentation, example page
 */
