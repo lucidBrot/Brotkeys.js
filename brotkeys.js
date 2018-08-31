@@ -402,10 +402,11 @@ class HotkeyManager {
 		element.innerHTML += `<kbd class=\"LB-SS-swap1 eric-reverse\">${linkHint}</kbd>`
 	}
 	
-
+	// uses global variable _brotkeysjs__src__path;
 	loadNeededJSCSSForStyleSwapping(){
 		var scripts = document.getElementsByTagName("script");
-		var jsFileLocation = scripts[scripts.length-1].src;
+		var jsFileLocation = _brotkeysjs__src__path.replace('brotkeys.js','');
+		this.log_verbose("jsFileLocation "+jsFileLocation);
 		
 		// taken from http://www.javascriptkit.com/javatutors/loadjavascriptcss.shtml
 		function loadjscssfile(filename, filetype){
@@ -437,6 +438,13 @@ class HotkeyManager {
 	}
 	
 }
+
+var _brotkeysjs__src__path;
+function _brotkeys_global_init(){ // get script tag that is the last at current evaluation time
+	var scripts = document.getElementsByTagName("script");
+	_brotkeysjs__src__path = scripts[scripts.length-1].src;
+}
+_brotkeys_global_init();
 
 function brotkeys_autogenerate_everything(){
 	var manager;
