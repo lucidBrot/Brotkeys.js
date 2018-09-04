@@ -264,12 +264,12 @@ class HotkeyManager {
 	}
 
 	// Returns an unused link hint
-	// Might underestimate the number of needed characters if you have some previously defined content that is too short!
+	// TODO: refactor this such that the math is done before calling this function.
 	/*String*/ generateLinkHintText(element, num_elems_to_gen_for){
         // noinspection JSUnusedLocalSymbols
         let unavailable_words = Array.from(this.wordMap, ([word, action]) => word);
-        let homerow_chars = ['f', 'j', 'd', 'f', 's', 'g', 'h', 'k','l'];
-        let other_okay_chars = ['q','w','e','r','t','u','i','o','p','v','n','m'];
+        let homerow_chars = ['f', 'j', 'd', 's', 'g', 'h', 'k','l'];
+        let other_okay_chars = ['q','w','e','r','t','u','i','o','p','v','n','m']; // TODO: move these to the config in constructor
         // get rid of important function keys
         homerow_chars = homerow_chars.filter(char => char !== this.F_MODE_PREFIX_CHAR);
         other_okay_chars = other_okay_chars.filter(char => char !== this.F_MODE_PREFIX_CHAR);
@@ -277,21 +277,23 @@ class HotkeyManager {
         const letters = homerow_chars.concat(other_okay_chars);
         // {num_letters}^{min_length} = num_possible_words  ===>  min_length = log_{num_letters}{num_possible_words}
 		function minlen(num){
-			 Math.ceil(Math.log(num)/Math.log(letters.length));
+			 return Math.ceil(Math.log(num)/Math.log(letters.length));
 		}
         let min_length = minlen(num_elems_to_gen_for);
 
 		// make sure the minimal length works even with pre-set triggers. As reason, see the comment below, tagged with ##comment1##
-		function num_lost_words(pre_set_word_array_array){
-			let res = 0;
+		function num_lost_words(pre_set_word_array_array, min_length){
+			let lost_options = 0;
 			for(let pre_set_word_array in pre_set_word_array_array){
 				let lost_len = min_length - pre_set_word_array.length;
-				res += lost_len;
+				lost_options += Math.pow(letters.length,lost_len);
 			}
-			return res;
+			return lost_options;
 		}
-		while(minlen(num_lost_words(unavailable_words)+num_elems_to_gen_for) > min_length){
+		let _tmp = 0;
+		while(minlen(num_lost_words(unavailable_words, min_length)+num_elems_to_gen_for) > min_length){
 			min_length++;
+			_tmp++;
 		}
 		
 		/*##comment1##
@@ -334,7 +336,7 @@ class HotkeyManager {
 		let initial_guess = word.slice();
         word = this.recGenWordGo(letters, unavailable_words, initial_guess); // resulting word must be a word array
         if(word === null){
-        	this.log_error("Failed to generate a link hint of length "+initial_guess.length+" when only considering words 'smaller' than "+to_word(initial_guess));
+        	this.log_error("Failed to generate a link hint of length "+initial_guess.length+" when only considering words 'larger' than "+to_word(initial_guess));
 		}
 
         // keep track of the last word array generated, in case there are many
@@ -571,5 +573,6 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
 	TODO: make link buttons take no space until visible
 	TODO: why does "abort f mode" log twice?"
 	TODO: run autogenerate in summaries.html
+	TODO: refactor generateLinkHint to do the math only once.
 	TODO: documentation, example page
 */
