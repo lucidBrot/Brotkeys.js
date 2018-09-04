@@ -220,7 +220,10 @@ class HotkeyManager {
 	// Param: generationTarget can be any of the HotkeyManager.GenerationEnum, bitwise OR'ed together.
 	// If an element is of tag type <a> (anchor) AND of class "BKH", it will be treated only once, even if both are specified.
     // at time of writing this (24.08.2018), the only options are class_tagged (with class name BKH) and tag_anchor
-	autogenerate(generationTarget) {
+	autogenerate(generationTarget, /*optional*/ css_class_name) {
+		// use default generationClassTag unless the optional css_class_name parameter is specified
+		let generationClassTag = (css_class_name == undefined) ? this.generationClassTag : css_class_name;
+		
         // fetch list of elements to be worked on
         let elems_to_gen;
         let g;
@@ -229,8 +232,8 @@ class HotkeyManager {
 			// every bit corresponds to one flag. Test if the relevant bit is set.
 			// noinspection JSBitwiseOperatorUsage
             if ((generationTarget & this.GenerationEnum.class_tagged) === this.GenerationEnum.class_tagged) {
-				elems_to_gen = document.getElementsByClassName(this.generationClassTag);
-				g = "classes tagged "+this.generationClassTag;
+				elems_to_gen = document.getElementsByClassName(generationClassTag);
+				g = "classes tagged "+generationClassTag;
 				break fetching_elems;
 			}
 			// noinspection JSBitwiseOperatorUsage
@@ -447,7 +450,7 @@ function _brotkeys_global_init(){ // get script tag that is the last at current 
 }
 _brotkeys_global_init();
 
-function brotkeys_autogenerate_everything(){
+function brotkeys_autogenerate_manager_for_anchors(){
 	var manager;
 	// words of the form [f]abcdefg unless enable_f_mode is set to false
 	// DONT INCLUDE AN UPPERCASE X, because that is used to immediately abort f mode here. (Because it's set below)
@@ -471,7 +474,7 @@ function brotkeys_autogenerate_everything(){
 	// This function causes the link hints to appear or disappear
 	var notifyFModeFunc = function(entering){
 		if(entering){
-			this.showKeys(true, "LB-SS-swap1"); //important: this class must be defined in an _external_ css file.
+			this.showKeys(true, "LB-SS-swap1");
 		} else {
 			this.showKeys(false, "LB-SS-swap1");
 		}
@@ -481,6 +484,47 @@ function brotkeys_autogenerate_everything(){
 	
 	manager.autogenerate(manager.GenerationEnum.tag_anchor); // autogenerate tags
 }
+
+function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
+	var manager;
+	// words of the form [f]abcdefg unless enable_f_mode is set to false
+	// DONT INCLUDE AN UPPERCASE X, because that is used to immediately abort f mode here. (Because it's set below)
+	var wordMap = new Map([
+		// define some manually made input/action pairs
+		["secret", function(){window.open("https://github.com/lucidBrot/Brotkeys.js", "_self");}],
+	]);
+	// single characters that can interrupt at any time during the word-typing mode
+	var interruptMap = new Map([
+		["X", function(){manager.abort_f_mode();}], // abort fmode on fX
+		["D", function(){console.log("user disabled shortcuts"); manager.disable();}], // completely disable Brotkeys on fD
+	]);
+
+	manager = new HotkeyManager(wordMap, interruptMap);
+	manager.interrupt_caseInsensitivity = false; // case sensitive
+	
+	// load neccessary css for style swapping (needed for showing link hints with the internal manager.addBeautifulLinkHints)
+	manager.loadNeededJSCSSForStyleSwapping();
+	
+	// please notify me on entering and leaving fmode by calling this function.
+	// This function causes the link hints to appear or disappear
+	var notifyFModeFunc = function(entering){
+		if(entering){
+			this.showKeys(true, "LB-SS-swap1");
+		} else {
+			this.showKeys(false, "LB-SS-swap1");
+		}
+	};
+	manager.setNotifyFModeFunction(notifyFModeFunc);
+	manager.log_prefix = "[M1] ";
+	
+	manager.autogenerate(manager.GenerationEnum.tag_anchor, css_class_name); // autogenerate tags (and onClick behaviour when the user triggers brotkeys) for elements with the given class
+}
+
+/*
+	Usage of autogenerate: run brotkeys_autogenerate_manager_for_class_tag("arbitrary_class"); or run brotkeys_autogenerate_manager_for_anchors();
+	Be aware that running both will create two independent managers, which means some words might trigger multiple actions when entered. Or undefined behaviour.
+	If you need anything more specific, it's better to use autogenerate only as an inspiration to write your own function.
+*/
 
 /*
 	TODO: does it work with the class BHK instead of anchors?
