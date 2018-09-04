@@ -264,6 +264,7 @@ class HotkeyManager {
 	}
 
 	// Returns an unused link hint
+	// Might underestimate the number of needed characters if you have some previously defined content that is too short!
 	/*String*/ generateLinkHintText(element, num_elems_to_gen_for){
         // noinspection JSUnusedLocalSymbols
         let unavailable_words = Array.from(this.wordMap, ([word, action]) => word);
@@ -275,8 +276,37 @@ class HotkeyManager {
         // compute the minimal number of letters needed
         const letters = homerow_chars.concat(other_okay_chars);
         // {num_letters}^{min_length} = num_possible_words  ===>  min_length = log_{num_letters}{num_possible_words}
-        const min_length = Math.ceil(Math.log(num_elems_to_gen_for)/Math.log(letters.length));
+		function minlen(num){
+			 Math.ceil(Math.log(num)/Math.log(letters.length));
+		}
+        let min_length = minlen(num_elems_to_gen_for);
 
+		// make sure the minimal length works even with pre-set triggers. As reason, see the comment below, tagged with ##comment1##
+		function num_lost_words(pre_set_word_array_array){
+			let res = 0;
+			for(let pre_set_word_array in pre_set_word_array_array){
+				let lost_len = min_length - pre_set_word_array.length;
+				res += lost_len;
+			}
+			return res;
+		}
+		while(minlen(num_lost_words(unavailable_words)+num_elems_to_gen_for) > min_length){
+			min_length++;
+		}
+		
+		/*##comment1##
+		// This is no longer an issue, but the explanation is left here to show why the code above (referencing this comment) is needed.
+		
+		Make sure you don't have many too short words in the wordMap before running autogenerate, since this might cause it to wrongly estimate the number of characters needed.
+		E.g. if you have already manually mapped "a" to some action, and then you run autogenerate on 100 anchor elements.
+		Autogenerate realizes that it will need log(100)=7 characters to handle all these.
+		But it is not allowed to generate any word that starts with "a", since your trigger already exists on that, and cancels the evaluation.
+		It is also not allowed to generate any word that is the beginning of your "a", since that would cancel the evaluation of your "a".
+		So we lose a large part of options just because of your "a".
+		If a problem appears because of that, it will be logged. Just make sure to test your site with the developer tools open.
+		*/
+		
+		
         // compute an available word of minimal length, favoring the homerow chars.
         let position = min_length-1;
 
@@ -333,7 +363,10 @@ class HotkeyManager {
         }
         // boolean
 		function is_ok_word(word_array){
-			return (!not_ok_words.includes(word(word_array)));
+			let as_word = word(word_array);
+			return (!not_ok_words.includes(as_word)) && // But what if not_ok_words contains a word that is shorter than our attempt? Then it's not ok if our attempt starts with it
+				(!not_ok_words.some(not_ok_word => as_word.startsWith(not_ok_word))) && // And we also don't want our attempt to be the beginning of a not-ok-word. We are not allowed to overwrite those
+				(!not_ok_words.some(not_ok_word => not_ok_word.startsWith(as_word)));
 		}
 
         if(initial_attempt.length <= 0){return null;}
@@ -528,6 +561,7 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
 	then run manager.autogenerate(manager.GenerationEnum.class_tagged, "arbitrary_class");     to modify the same manager's content without duplicating trigger words.
 	However, in that case it might happen that different lengths are used. So if you want to do that, giving everything a class tag is probably easier than figuring out how this code works.
 	(Hint: you can do that from javascript, no need to add that class manually.)
+
 */
 
 /*
