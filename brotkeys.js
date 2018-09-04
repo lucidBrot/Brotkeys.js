@@ -571,8 +571,7 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
 	TODO: does it work with images?
 	TODO: what happens when user types in text fields?
 	TODO: make link buttons take no space until visible
-	TODO: why does "abort f mode" log twice?"
 	TODO: run autogenerate in summaries.html
-	TODO: refactor generateLinkHint to do the math only once.
+	TODO: refactor generateLinkHint to do the math only once. Consider todos elsewhere in this file
 	TODO: documentation, example page
 */
