@@ -517,7 +517,7 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
 	manager.setNotifyFModeFunction(notifyFModeFunc);
 	manager.log_prefix = "[M1] ";
 	
-	manager.autogenerate(manager.GenerationEnum.tag_anchor, css_class_name); // autogenerate tags (and onClick behaviour when the user triggers brotkeys) for elements with the given class
+	manager.autogenerate(manager.GenerationEnum.class_tagged, css_class_name); // autogenerate tags (and onClick behaviour when the user triggers brotkeys) for elements with the given class
 }
 
 /*
