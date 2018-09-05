@@ -1,5 +1,7 @@
 # Brotkeys.js
 
+> **Capture and react to user-typed words. Make your website keyboard-friendly with minimal effort.**
+
 Brotkeys builds upon [jaywcjaylove's hotkeys](https://github.com/jaywcjlove/hotkeys) and depends on [their release](https://github.com/jaywcjlove/hotkeys/blob/master/dist/hotkeys.common.min.js) to offer the additional functionality of reacting not only to a given key press, but also to words, by specifying a javascript function that shall be executed.
 
 ## Features
