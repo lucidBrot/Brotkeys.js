@@ -247,7 +247,25 @@ kbd.eric-reverse {
 }
 ```
 
+## Using Defer
 
+It seems like a cool feature, `defer`. But it makes it impossible for Brotkeys to figure out where it is stored. There are several ways to solve this problem, but the simplest way is not to use `defer`.
+The second simplest way is to tell Brotkey where it is stored:
+
+```html
+<!-- main.html -->
+<script src="./libs/jaywcjlove_hotkeys/hotkeys.min.js" defer></script>
+<script src="./libs/lucidbrot_brotkeys/brotkeys.js" defer></script>
+<script src="./keyjs/main.js" defer></script>
+```
+
+```js
+// main.js
+// since we used defer in main.html for brotkeys, we have to tell brotkeys where it lives. Absolute, or relative to the HTML file where this js file is included in.
+_brotkeysjs__src__path = './libs/lucidbrot_brotkeys/brotkeys.js';
+```
+
+This is only relevant if you are using [autogenerate](#Autogeneration) or anything else that uses [loadNeededJSCSSForStyleSwapping](#loadNeededJSCSSForStyleSwapping).
 
 ## Implementation Details
 
@@ -311,7 +329,7 @@ Does not unregister the listener to hotkeys.js - it simply does not act on the e
 
 There's no harm in calling this, I think. But there's also no reason to. It's called from the constructor.
 
-### loadNeededJSCSS()
+### loadNeededJSCSSForStyleSwapping
 
 This loads the css needed for toggling the style of the link hints when hiding them.
 
