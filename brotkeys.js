@@ -17,7 +17,8 @@ class HotkeyManager {
         this.OTHER_OKAY_CHARS  = ['q','w','e','r','t','u','i','o','p','v','n','m'];
 
         // internal config. It doesn't matter what you set here
-        this.AUTOGEN_LINKHINT_ATTRIBUTE = "brotkeysid";
+        this.AUTOGEN_LINKHINT_ATTRIBUTE = "brotkeysid"; // used for counting all anchors. Throwaway property.
+        this.SWAP_CLASS_NAME_DEFAULT = "LB-SS-swap1"; // used for all link hints in order to swap them on and off if no other are provided
 
         // fake enum for adding more options later, for autogeneration of link hints
         // never use 0 in enums, since it could compare as equal to null or undefined or false
@@ -233,9 +234,10 @@ class HotkeyManager {
 	// Param: generationTarget can be any of the HotkeyManager.GenerationEnum, bitwise OR'ed together.
 	// If an element is of tag type <a> (anchor) AND of class "BKH", it will be treated only once, even if both are specified.
     // at time of writing this (24.08.2018), the only options are class_tagged (with class name BKH) and tag_anchor
-	autogenerate(generationTarget, /*optional*/ css_class_name) {
+	autogenerate(generationTarget, /*optional*/ css_class_name, /*optional*/ arbitrary_swap_class_name) {
 		// use default GENERATION_CLASS_TAG unless the optional css_class_name parameter is specified
 		let generationClassTag = (css_class_name === undefined) ? this.GENERATION_CLASS_TAG : css_class_name;
+		let swap_class = (arbitrary_swap_class_name === undefined) ? this.SWAP_CLASS_NAME_DEFAULT : arbitrary_swap_class_name;
 		
         // fetch list of elements to be worked on
         let elems_to_gen;
@@ -273,7 +275,7 @@ class HotkeyManager {
             let f = new Function("document.querySelector(\"["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+curr_bk_elem_id+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
-            HotkeyManager.addBeautifulLinkHint(item, link_hint_text); // add the graphics
+            HotkeyManager.addBeautifulLinkHint(item, link_hint_text, swap_class); // add the graphics
             brotkeys_elem_id++;
 		}.bind(this));
 	}
@@ -459,8 +461,8 @@ class HotkeyManager {
 		element.text += " [" + linkHint + "] ";
 	}
 	
-	static addBeautifulLinkHint(element, linkHint){
-		element.innerHTML += `<kbd class=\"LB-SS-swap1 eric-reverse\">${linkHint}</kbd>`
+	static addBeautifulLinkHint(element, linkHint, swap_class){
+		element.innerHTML += `<kbd class=\"${swap_class} eric-reverse\">${linkHint}</kbd>`
 	}
 	
 	// uses global variable _brotkeysjs__src__path;
@@ -470,12 +472,12 @@ class HotkeyManager {
 		// taken from http://www.javascriptkit.com/javatutors/loadjavascriptcss.shtml
 		function loadjscssfile(filename, filetype){
 			if (filetype==="js"){ //if filename is a external JavaScript file
-				let fileref=document.createElement('script');
+				var fileref=document.createElement('script');
 				fileref.setAttribute("type","text/javascript");
 				fileref.setAttribute("src", filename)
 			}
 			else if (filetype==="css"){ //if filename is an external CSS file
-				let fileref=document.createElement("link");
+				var fileref=document.createElement("link");
 				fileref.setAttribute("rel", "stylesheet");
 				fileref.setAttribute("type", "text/css");
 				fileref.setAttribute("href", filename)
@@ -501,6 +503,8 @@ class HotkeyManager {
 	// which takes a boolean whether we're entering f-mode, and then does the
 	// showing / hiding the link hints as a reaction to them being pressed
 	genToggleKeysOnNotify(swapClass){
+		if(swapClass===undefined){swapClass = this.SWAP_CLASS_NAME_DEFAULT;}
+
 		return function(entering) {
             if (entering) {
                 HotkeyManager.showKeys(true, swapClass);
@@ -556,11 +560,14 @@ function brotkeys_autogenerate_manager_for_anchors(){
 	// please notify me on entering and leaving fmode by calling this function.
 	// This function causes the link hints to appear or disappear
 	// Use any string you wish here. Different strings in different instances of HotkeyManager mean different classes are shown/hidden.
-	var notifyFModeFunc = manager.genToggleKeysOnNotify("LB-Swap-Class");
+	let swap_class = "LB-Swap-Class";
+	var notifyFModeFunc = manager.genToggleKeysOnNotify(swap_class);
 	manager.setNotifyFModeFunction(notifyFModeFunc);
 	manager.log_prefix = "[M1] "; // feel free to modify this as you see fit
 	
-	manager.autogenerate(manager.GenerationEnum.tag_anchor); // autogenerate tags
+	manager.autogenerate(manager.GenerationEnum.tag_anchor, undefined, swap_class); // autogenerate tags
+	// we don't care about the second argument since we're using tag_anchor
+	// we use the swap_class parameter to determine what class to use. all that is important here is that it's the same as in the genToggleKeysOnNotify call.
 }
 
 function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
@@ -586,16 +593,17 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
 	// please notify me on entering and leaving fmode by calling this function.
 	// This function causes the link hints to appear or disappear
 	// Use any string you wish here. Different strings in different instances of HotkeyManager mean different classes are shown/hidden.
-	var notifyFModeFunc = manager.genToggleKeysOnNotify("LB-SS-swap1");
+	var notifyFModeFunc = manager.genToggleKeysOnNotify(manager.SWAP_CLASS_NAME_DEFAULT);
 	manager.setNotifyFModeFunction(notifyFModeFunc);
 	manager.log_prefix = "[M1] "; // feel free to modify this as you see fit
 	
-	manager.autogenerate(manager.GenerationEnum.class_tagged, css_class_name); // autogenerate tags (and onClick behaviour when the user triggers brotkeys) for elements with the given class
+	manager.autogenerate(manager.GenerationEnum.class_tagged, css_class_name, manager.SWAP_CLASS_NAME_DEFAULT); // autogenerate tags (and onClick behaviour when the user triggers brotkeys) for elements with the given class
+	// the last argument is for internal workings and could be left unset - but it is clearer this way, since genToggleKeysOnNotify needs the same class name as argument
 }
 
 /*
-	TODO: make link buttons overlay if possible, instead of shifting content.
+	TODO: make link hints overlay if possible, instead of shifting content.
+	TODO: make sure link hints also show over images
 	TODO: documentation, example page
 	TODO: document how to change eric-reverse looks
-	TODO: use the genToggleKeysOnNotify in my sample...
 */

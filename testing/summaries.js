@@ -14,14 +14,9 @@ manager = new HotkeyManager(wordMap, interruptMap);
 manager.interrupt_caseInsensitivity = false;
 
 manager.loadNeededJSCSSForStyleSwapping();
-// please notify me on entering and leaving fmode
-var notifyFModeFunc = function(entering){
-	if(entering){
-		HotkeyManager.showKeys(true, "LB-SS-swap1");
-	} else {
-		HotkeyManager.showKeys(false, "LB-SS-swap1");
-	}
-};
+// please notify me on entering and leaving fmode simply by showing the link hints
+// this is the simplest way to do this. for other options, see the examples in brotkeys.js#brotkeys_autogenerate_manager_for_anchors and brotkeys.js#brotkeys_autogenerate_manager_for_class_tag
+var notifyFModeFunc = manager.genToggleKeysOnNotify();
 manager.setNotifyFModeFunction(notifyFModeFunc);
 manager.log_prefix = "[M] ";
 manager.autogenerate(manager.GenerationEnum.tag_anchor);
