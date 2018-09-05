@@ -265,7 +265,7 @@ The second simplest way is to tell Brotkey where it is stored:
 _brotkeysjs__src__path = './libs/lucidbrot_brotkeys/brotkeys.js';
 ```
 
-This is only relevant if you are using [autogenerate](#Autogeneration) or anything else that uses [loadNeededJSCSSForStyleSwapping](#loadNeededJSCSSForStyleSwapping).
+This is only relevant if you are using [autogenerate](#autogeneration) or anything else that uses [loadNeededJSCSSForStyleSwapping](#loadneededjscssforstyleswapping).
 
 ## Implementation Details
 
