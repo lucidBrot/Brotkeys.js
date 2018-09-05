@@ -358,4 +358,4 @@ eric@mink.li
 
 ## Note on the Beauty of the Code
 
-It's probably ugly. I've tried a little, but not too hard, and javascript does not offer the options I'm used to. This is not a "sorry", it's just a "I knew that it was ugly when I wrote it, I'm not incompetent".
+It's probably ugly. I've tried a little, but not too hard, and javascript does not offer the options I'm used to. This is not a "sorry", it's just a "I knew that it was ugly when I wrote it, I'm not that incompetent".
