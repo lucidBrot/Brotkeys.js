@@ -11,7 +11,7 @@ Brotkeys builds upon [jaywcjaylove's hotkeys](https://github.com/jaywcjlove/hotk
 
 ## Usage
 
-### [Autogeneration - click me to jump ahead](#Autogeneration) 
+### [Autogeneration - click me to jump ahead](#autogeneration) 
 
 ### Basic Example
 
