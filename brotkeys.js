@@ -170,7 +170,7 @@ class HotkeyManager { // more than one instance will probably mess with hotkey l
 	}
 	/*boolean*/ shouldEnterFModeOnKey(eventkey){
 		if(this.fmode_caseInsensitivity){eventkey = eventkey.toLowerCase();}
-		return (eventkey == this.F_MODE_PREFIX_CHAR);
+		return (event.key == this.F_MODE_PREFIX_CHAR);
 	}
 	
 	hotkeys_handler_on_key_press(event, handler, that){
