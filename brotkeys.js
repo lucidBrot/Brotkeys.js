@@ -457,12 +457,12 @@ class HotkeyManager {
 
 	}
 
+	// adds the link hint as text, for debug purposes
     addLinkHint(element, linkHint){
 		element.text += " [" + linkHint + "] ";
 	}
 	
 	addBeautifulLinkHint(element, linkHint){
-		this.addLinkHint(element, linkHint); // temporary
 		element.innerHTML += `<kbd class=\"LB-SS-swap1 eric-reverse\">${linkHint}</kbd>`
 	}
 	
