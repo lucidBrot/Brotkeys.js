@@ -248,12 +248,14 @@ class HotkeyManager {
 		this.log_verbose("Autogenerating for the "+g+". ");
 
         const num_elems_to_gen_for = elems_to_gen.length + this.wordMap.size; // need to fit at least this many link hints
+		let letters = this.computeLettersArray();
+		let min_len = this.computeMinLength(num_elems_to_gen_for, letters);
 		let brotkeys_elem_id = 0;
 		// For each element, create a tag
         [...elems_to_gen].forEach(function(item, index){
 			const curr_bk_elem_id = brotkeys_elem_id;
             // noinspection JSPotentiallyInvalidUsageOfClassThis
-            let link_hint_text = this.generateLinkHintText(item, num_elems_to_gen_for); // generate link hint
+            let link_hint_text = this.generateLinkHintText(item, min_len, letters); // generate link hint
 			item.setAttribute(this.AUTOGEN_LINKHINT_ATTRIBUTE, index); // give it a unique id based on index
             let f = new Function("document.querySelector(\"["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+curr_bk_elem_id+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
@@ -263,11 +265,7 @@ class HotkeyManager {
 		}.bind(this));
 	}
 
-	// Returns an unused link hint
-	// TODO: refactor this such that the math is done before calling this function.
-	/*String*/ generateLinkHintText(element, num_elems_to_gen_for){
-        // noinspection JSUnusedLocalSymbols
-        let unavailable_words = Array.from(this.wordMap, ([word, action]) => word);
+	computeLettersArray(){
         let homerow_chars = ['f', 'j', 'd', 's', 'g', 'h', 'k','l'];
         let other_okay_chars = ['q','w','e','r','t','u','i','o','p','v','n','m']; // TODO: move these to the config in constructor
         // get rid of important function keys
@@ -275,39 +273,49 @@ class HotkeyManager {
         other_okay_chars = other_okay_chars.filter(char => char !== this.F_MODE_PREFIX_CHAR);
         // compute the minimal number of letters needed
         const letters = homerow_chars.concat(other_okay_chars);
+        return letters;
+	}
+
+	/*int*/ computeMinLength(num_elems_to_gen_for, letters){
         // {num_letters}^{min_length} = num_possible_words  ===>  min_length = log_{num_letters}{num_possible_words}
-		function minlen(num){
-			 return Math.ceil(Math.log(num)/Math.log(letters.length));
-		}
+        function minlen(num){
+            return Math.ceil(Math.log(num)/Math.log(letters.length));
+        }
         let min_length = minlen(num_elems_to_gen_for);
 
-		// make sure the minimal length works even with pre-set triggers. As reason, see the comment below, tagged with ##comment1##
-		function num_lost_words(pre_set_word_array_array, min_length){
-			let lost_options = 0;
-			for(let pre_set_word_array in pre_set_word_array_array){
-				let lost_len = min_length - pre_set_word_array.length;
-				lost_options += Math.pow(letters.length,lost_len);
-			}
-			return lost_options;
-		}
-		let _tmp = 0;
-		while(minlen(num_lost_words(unavailable_words, min_length)+num_elems_to_gen_for) > min_length){
-			min_length++;
-			_tmp++;
-		}
-		
-		/*##comment1##
-		// This is no longer an issue, but the explanation is left here to show why the code above (referencing this comment) is needed.
-		
-		Make sure you don't have many too short words in the wordMap before running autogenerate, since this might cause it to wrongly estimate the number of characters needed.
-		E.g. if you have already manually mapped "a" to some action, and then you run autogenerate on 100 anchor elements.
-		Autogenerate realizes that it will need log(100)=7 characters to handle all these.
-		But it is not allowed to generate any word that starts with "a", since your trigger already exists on that, and cancels the evaluation.
-		It is also not allowed to generate any word that is the beginning of your "a", since that would cancel the evaluation of your "a".
-		So we lose a large part of options just because of your "a".
-		If a problem appears because of that, it will be logged. Just make sure to test your site with the developer tools open.
-		*/
-		
+        // make sure the minimal length works even with pre-set triggers. As reason, see the comment below, tagged with ##comment1##
+        function num_lost_words(pre_set_word_array_array, min_length){
+            let lost_options = 0;
+            for(let pre_set_word_array of pre_set_word_array_array){
+                let lost_len = min_length - pre_set_word_array.length;
+                lost_options += Math.pow(letters.length,lost_len);
+            }
+            return lost_options;
+        }
+        let _tmp = 0;
+        while(minlen(num_lost_words(unavailable_words, min_length)+num_elems_to_gen_for) > min_length){
+            min_length++;
+            _tmp++;
+        }
+
+        /*##comment1##
+        // This is no longer an issue, but the explanation is left here to show why the code above (referencing this comment) is needed.
+
+        Make sure you don't have many too short words in the wordMap before running autogenerate, since this might cause it to wrongly estimate the number of characters needed.
+        E.g. if you have already manually mapped "a" to some action, and then you run autogenerate on 100 anchor elements.
+        Autogenerate realizes that it will need log(100)=7 characters to handle all these.
+        But it is not allowed to generate any word that starts with "a", since your trigger already exists on that, and cancels the evaluation.
+        It is also not allowed to generate any word that is the beginning of your "a", since that would cancel the evaluation of your "a".
+        So we lose a large part of options just because of your "a".
+        If a problem appears because of that, it will be logged. Just make sure to test your site with the developer tools open.
+        */
+        return min_length;
+	}
+
+	// Returns an unused link hint, consisting of the letters, of length min_length. Or more if the last generated linkhint was longer.
+	/*String*/ generateLinkHintText(element, min_length, letters){
+        // noinspection JSUnusedLocalSymbols
+        let unavailable_words = Array.from(this.wordMap, ([word, action]) => word);
 		
         // compute an available word of minimal length, favoring the homerow chars.
         let position = min_length-1;
@@ -326,6 +334,10 @@ class HotkeyManager {
             // start at the start
             word = Array(min_length).fill(0);
         }
+        // if the word that was last generated is shorter than the provided min_length, artificially lengthen it.
+        while(word.length < min_length){
+        	word.push(letters[0])
+		}
 
         function to_word(word_array){let w="";// noinspection JSUnusedLocalSymbols
             word_array.forEach(function(letter_number, elem_index){w = w.concat(letters[letter_number])});
