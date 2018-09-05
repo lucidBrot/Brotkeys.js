@@ -500,6 +500,19 @@ class HotkeyManager {
 		let elem;
 		for (elem of document.getElementsByClassName(of_class)) {elem.style.display=new_display;}
 	}
+
+	// function which generates another function
+	// which takes a boolean whether we're entering f-mode, and then does the
+	// showing / hiding the link hints as a reaction to them being pressed
+	genToggleKeysOnNotify(swapClass){
+		return function(entering) {
+            if (entering) {
+                this.showKeys(true, swapClass);
+            } else {
+                this.showKeys(false, swapClass);
+            }
+        }.bind(this);
+	}
 	
 }
 
@@ -547,13 +560,7 @@ function brotkeys_autogenerate_manager_for_anchors(){
 	// please notify me on entering and leaving fmode by calling this function.
 	// This function causes the link hints to appear or disappear
 	// Use any string you wish here. Different strings in different instances of HotkeyManager mean different classes are shown/hidden.
-	var notifyFModeFunc = function(entering){
-		if(entering){
-			manager.showKeys(true, "LB-SS-swap1");
-		} else {
-			manager.showKeys(false, "LB-SS-swap1");
-		}
-	};
+	var notifyFModeFunc = manager.genToggleKeysOnNotify("LB-Swap-Class");
 	manager.setNotifyFModeFunction(notifyFModeFunc);
 	manager.log_prefix = "[M1] "; // feel free to modify this as you see fit
 	
@@ -583,13 +590,7 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
 	// please notify me on entering and leaving fmode by calling this function.
 	// This function causes the link hints to appear or disappear
 	// Use any string you wish here. Different strings in different instances of HotkeyManager mean different classes are shown/hidden.
-	var notifyFModeFunc = function(entering){
-		if(entering){
-			manager.showKeys(true, "LB-SS-swap1");
-		} else {
-			manager.showKeys(false, "LB-SS-swap1");
-		}
-	};
+	var notifyFModeFunc = manager.genToggleKeysOnNotify("LB-SS-swap1");
 	manager.setNotifyFModeFunction(notifyFModeFunc);
 	manager.log_prefix = "[M1] "; // feel free to modify this as you see fit
 	
