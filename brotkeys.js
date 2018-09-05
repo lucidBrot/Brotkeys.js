@@ -1,13 +1,32 @@
 // (c) Eric Mink aka LucidBrot 2018
+
+// keep in mind that multiple HotkeyManagers only work as long as you don't unregister them via the hotkeys library.
+// and multiple managers might autogenerate the same link hints for different content.
 class HotkeyManager {
-    // more than one instance will probably mess with hotkey library scopes. This class is just to not poison the JS scope with variable names.
-	
+
 	/*
 		wordMap: Map of [strings that exist on the page, functions as reaction on the string]
 			If a word starts with another word, the shorter will not leave fmode when its function is called.
 		interruptMap: Map of [char, function]
 	*/
 	constructor(wordMap, interruptMap){
+		/** <CONFIG/> **/
+        // characters that are preferredly used for autogenerating link hints
+        this.HOMEROW_CHARS = ['f', 'j', 'd', 's', 'g', 'h', 'k','l'];
+        // characters that are used before deciding to make the word longer, as a second choice after all homerow combinations have been used
+        this.OTHER_OKAY_CHARS  = ['q','w','e','r','t','u','i','o','p','v','n','m'];
+
+        // internal config. It doesn't matter what you set here
+        this.AUTOGEN_LINKHINT_ATTRIBUTE = "brotkeysid";
+
+        // fake enum for adding more options later, for autogeneration of link hints
+        // never use 0 in enums, since it could compare as equal to null or undefined or false
+        this.GenerationEnum = Object.freeze({"tag_anchor":0b01,"class_tagged":0b10});
+        this.GENERATION_CLASS_TAG = "BKH"; // default for class_tagged is the class "BKH", but this could be easily changed
+
+		/** <CONFIG/> **/
+
+
 		// initialize the string of what the user has entered to nothing
 		this.current_link_word = "";
 		// set up the value for entering f_mode
@@ -28,13 +47,7 @@ class HotkeyManager {
 		this.fmode_caseInsensitivity = true;
 		this.interrupt_caseInsensitivity = true;
 		this.word_caseInsensitivity = true;
-		this.ignore_ShiftAndCapslock_inWordMode = true; 
-		
-		// fake enum for adding more options later, for autogeneration of link hints
-		// never use 0 in enums, since it could compare as equal to null or undefined or false
-		this.GenerationEnum = Object.freeze({"tag_anchor":0b01,"class_tagged":0b10});
-		this.generationClassTag = "BKH"; // default for class_tagged is the class "BKH", but this could be easily changed
-        this.AUTOGEN_LINKHINT_ATTRIBUTE = "brotkeysid";
+		this.ignore_ShiftAndCapslock_inWordMode = true;
 		
 		this.hotkeys_init();
 	}
@@ -221,8 +234,8 @@ class HotkeyManager {
 	// If an element is of tag type <a> (anchor) AND of class "BKH", it will be treated only once, even if both are specified.
     // at time of writing this (24.08.2018), the only options are class_tagged (with class name BKH) and tag_anchor
 	autogenerate(generationTarget, /*optional*/ css_class_name) {
-		// use default generationClassTag unless the optional css_class_name parameter is specified
-		let generationClassTag = (css_class_name == undefined) ? this.generationClassTag : css_class_name;
+		// use default GENERATION_CLASS_TAG unless the optional css_class_name parameter is specified
+		let generationClassTag = (css_class_name == undefined) ? this.GENERATION_CLASS_TAG : css_class_name;
 		
         // fetch list of elements to be worked on
         let elems_to_gen;
@@ -266,8 +279,8 @@ class HotkeyManager {
 	}
 
 	computeLettersArray(){
-        let homerow_chars = ['f', 'j', 'd', 's', 'g', 'h', 'k','l'];
-        let other_okay_chars = ['q','w','e','r','t','u','i','o','p','v','n','m']; // TODO: move these to the config in constructor
+		let homerow_chars = this.HOMEROW_CHARS;
+		let other_okay_chars = this.OTHER_OKAY_CHARS;
         // get rid of important function keys
         homerow_chars = homerow_chars.filter(char => char !== this.F_MODE_PREFIX_CHAR);
         other_okay_chars = other_okay_chars.filter(char => char !== this.F_MODE_PREFIX_CHAR);
@@ -585,7 +598,6 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
 
 /*
 	TODO: make link buttons overlay if possible, instead of shifting content.
-	TODO: refactor generateLinkHint to do the math only once. Consider todos elsewhere in this file
 	TODO: documentation, example page
 	TODO: document how to change eric-reverse looks
 	TODO: autogenerate the swapping class with a UUID instead of using LB-SS-swap1 in every manager. Document that it's possible to reuse one for styleswapping.
