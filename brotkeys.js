@@ -49,6 +49,9 @@ class HotkeyManager {
 		this.interrupt_caseInsensitivity = true;
 		this.word_caseInsensitivity = true;
 		this.ignore_ShiftAndCapslock_inWordMode = true;
+
+		// this was not yet loaded
+        this.__loadNeededJSCSSForStyleSwapping_alreadyLoaded = false;
 		
 		this.hotkeys_init();
 	}
@@ -466,7 +469,11 @@ class HotkeyManager {
 	}
 	
 	// uses global variable _brotkeysjs__src__path;
+	// does not load the js and css if it was already loaded.
 	loadNeededJSCSSForStyleSwapping(){
+		// abort early
+		if(this.__loadNeededJSCSSForStyleSwapping_alreadyLoaded === true){return;}
+
 		var jsFileLocation = _brotkeysjs__src__path.replace('brotkeys.js','');
 		
 		// taken from http://www.javascriptkit.com/javatutors/loadjavascriptcss.shtml
@@ -491,6 +498,7 @@ class HotkeyManager {
 		loadjscssfile("mystyle.css", "css") ////dynamically load and add this .css file
 		*/
 		loadjscssfile(jsFileLocation+"keys.css", "css");
+        this.__loadNeededJSCSSForStyleSwapping_alreadyLoaded = true;
 	}
 	
 	static showKeys(pls_show_keys, of_class){
@@ -504,6 +512,7 @@ class HotkeyManager {
 	// showing / hiding the link hints as a reaction to them being pressed
 	genToggleKeysOnNotify(swapClass){
 		if(swapClass===undefined){swapClass = this.SWAP_CLASS_NAME_DEFAULT;}
+		this.loadNeededJSCSSForStyleSwapping();
 
 		return function(entering) {
             if (entering) {
