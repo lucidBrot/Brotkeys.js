@@ -7,9 +7,11 @@ Brotkeys builds upon [jaywcjaylove's hotkeys](https://github.com/jaywcjlove/hotk
 * listen for specific words
 * set a character that has to preceed any input
 * be informed on start and end of user input, or at every character
-* automatically generate an "open link" action for every anchor tag
+* automatically generate an "open link" action for every anchor tag or a specific css class
 
 ## Usage
+
+### [Autogeneration - click me to jump ahead](#Autogeneration) 
 
 ### Basic Example
 
@@ -130,6 +132,70 @@ Current word: qwer
 // To disable f_mode functionality (fmode means that you have to first press f - or whatever character you designed - before I start accepting words) :
 // manager.enable_f_mode(false);
 ```
+
+### Autogeneration
+
+You already have a webpage, filled with hundreds of links. You want for every link some link hint that displays a word, and when the user types that word it shall open the link.
+If you want much control, read the rest of this readme, set up your manager, and then call `manager.autogenerate(manager.GenerationEnum.tag_anchor, undefined, swap_class);`. If you want a **quick start**, do this:
+
+```html
+<script src="./libs/jaywcjlove_hotkeys/hotkeys.min.js"></script>
+<script src="./libs/lucidbrot_brotkeys/brotkeys.js"></script>
+<script type="text/javascript">
+	brotkeys_autogenerate_manager_for_anchors();
+</script>
+```
+
+Now you have exactly what I described above.
+
+Of course, that does not sate your thirst for power, you want _exactly that, but for other things_. Here you go: simply give each of your HTML elements the same CSS class - I'll use `class="some other classes BHK"` and then use
+
+```html
+<script src="./libs/jaywcjlove_hotkeys/hotkeys.min.js"></script>
+<script src="./libs/lucidbrot_brotkeys/brotkeys.js"></script>
+<script type="text/javascript">
+	brotkeys_autogenerate_manager_for_class_tag("BHK")
+</script>
+```
+
+And if you want even more control, here's what's lacking.
+In the way I just showed you, you do not have access to the HotkeyManager variable where you can change settings. If you want that, you could either use the implementation of the above-called functions as inspiration, or do it like I did in my sample page:
+
+```js
+var manager;
+// words of the form [f]abcdefg unless enable_f_mode is set to false
+// DONT INCLUDE AN UPPERCASE X, because that is used to immediately abort f mode here.
+var wordMap = new Map([
+	["secret", function(){window.open("https://eric.mink.li/src/php/ccount/click.php?id=sneric","_self");}],
+]);
+// single characters that can interrupt at any time during the word-typing mode
+var interruptMap = new Map([
+	["X", function(){manager.abort_f_mode();}],
+	["D", function(){console.log("user disabled shortcuts"); manager.disable();}],
+]);
+
+manager = new HotkeyManager(wordMap, interruptMap);
+manager.interrupt_caseInsensitivity = false;
+
+manager.loadNeededJSCSSForStyleSwapping();
+// please notify me on entering and leaving fmode simply by showing the link hints
+// this is the simplest way to do this. for other options, see the examples in brotkeys.js#brotkeys_autogenerate_manager_for_anchors and brotkeys.js#brotkeys_autogenerate_manager_for_class_tag
+var notifyFModeFunc = manager.genToggleKeysOnNotify();
+manager.setNotifyFModeFunction(notifyFModeFunc);
+manager.log_prefix = "[M] ";
+manager.autogenerate(manager.GenerationEnum.tag_anchor);
+```
+
+In this sample, I first create `wordMap`, a mapping from words to actions. `"secret"` is something I added manually, and whenever somebody types that (while in fMode, since I did not deactivate fMode) it calls the javascript function in that map, which opens some other url.
+The `interruptMap` contains things that can always happen, while in fMode, and interrupt the other actions.
+I create the manager with those two arrays as start setup, tell it that I want case sensitive interrupts. The call to `loadNeededJSCSSForStyleSwapping();` is only neccessary when not using `manager.genToggleKeysOnNotify()` but still using my css class - so _it is not needed here_. But it will usually not hurt to call it anyways, since it instantly returns if it has been called before on the same manager. Generally speaking, you probably never need this, but if something doesn't look correctly (or at all), try calling this.
+`genToggleKeysOnNotify` is a function that is tricky to explain, but in fact quite simple. `setNotifyFModeFunction` takes as argument any function that reacts to toggling of the fMode. `genToggleKeysOnNotify` generates such a function for you so you don't have to worry about this unless you want to use your own function instead. In that case, read the start of this readme instead, I think I have another example there.
+The log prefix is just that, a prefix before any log messages.
+And finally, the call to `autogenerate`.
+
+`autogenerate` takes up to three arguments. The first is mandatory: Either `manager.GenerationEnum.tag_anchor` or `manager.GenerationEnum.class_tag`. This states what you want to autogenerate.
+If you want to generate for anchors, you can pass `undefined` as the second argument. Otherwise the second argument is used as your class name that will be operated on.
+The third argument is replaced with `manager.SWAP_CLASS_NAME_DEFAULT` if you're passing `undefined`. It serves as the class name used for the link hint buttons that appear and disappear. Make sure it's the same as in `genToggleKeysOnNotify` if you have passed something there - and undefined if not.
 
 ### Multiple HotkeyManagers
 

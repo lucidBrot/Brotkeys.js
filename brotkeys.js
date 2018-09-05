@@ -296,7 +296,7 @@ class HotkeyManager {
 	}
 
 	/*int*/ computeMinLength(num_elems_to_gen_for, letters){
-        let unavailable_words = Array.from(this.wordMap, ([word, action]) => word);
+        let unavailable_words = Array.from(this.wordMap, ([word, action]) => word) + Array.from(this.interruptMap_whenInFMode, ([word, action]) => word);
         // {num_letters}^{min_length} = num_possible_words  ===>  min_length = log_{num_letters}{num_possible_words}
         function minlen(num){
             return Math.ceil(Math.log(num)/Math.log(letters.length));
@@ -335,7 +335,7 @@ class HotkeyManager {
 	// Returns an unused link hint, consisting of the letters, of length min_length. Or more if the last generated linkhint was longer.
 	/*String*/ generateLinkHintText(element, min_length, letters){
         // noinspection JSUnusedLocalSymbols
-        let unavailable_words = Array.from(this.wordMap, ([word, action]) => word);
+        let unavailable_words = Array.from(this.wordMap, ([word, action]) => word)  + Array.from(this.interruptMap_whenInFMode, ([word, action]) => word);
 		
         // compute an available word of minimal length, favoring the homerow chars.
 		// first, set up storage and an initial guess
