@@ -290,6 +290,7 @@ class HotkeyManager {
 	}
 
 	/*int*/ computeMinLength(num_elems_to_gen_for, letters){
+        let unavailable_words = Array.from(this.wordMap, ([word, action]) => word);
         // {num_letters}^{min_length} = num_possible_words  ===>  min_length = log_{num_letters}{num_possible_words}
         function minlen(num){
             return Math.ceil(Math.log(num)/Math.log(letters.length));
@@ -469,7 +470,6 @@ class HotkeyManager {
 	loadNeededJSCSSForStyleSwapping(){
 		var scripts = document.getElementsByTagName("script");
 		var jsFileLocation = _brotkeysjs__src__path.replace('brotkeys.js','');
-		this.log_verbose("jsFileLocation "+jsFileLocation);
 		
 		// taken from http://www.javascriptkit.com/javatutors/loadjavascriptcss.shtml
 		function loadjscssfile(filename, filetype){
@@ -601,5 +601,5 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
 	TODO: make link buttons overlay if possible, instead of shifting content.
 	TODO: documentation, example page
 	TODO: document how to change eric-reverse looks
-	TODO: autogenerate the swapping class with a UUID instead of using LB-SS-swap1 in every manager. Document that it's possible to reuse one for styleswapping.
+	TODO: use the genToggleKeysOnNotify in my sample...
 */
