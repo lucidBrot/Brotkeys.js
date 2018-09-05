@@ -283,6 +283,7 @@ class HotkeyManager {
             this.addBeautifulLinkHint(item, link_hint_text, swap_class); // add the graphics
             brotkeys_elem_id++;
 		}.bind(this));
+		HotkeyManager.showKeys(false, swap_class); // set display to none, even if the css class was not loaded before
 	}
 
 	computeLettersArray(){
@@ -515,8 +516,6 @@ class HotkeyManager {
 	genToggleKeysOnNotify(swapClass){
 		if(swapClass===undefined){swapClass = this.SWAP_CLASS_NAME_DEFAULT;}
 		this.loadNeededJSCSSForStyleSwapping();
-		
-		HotkeyManager.showKeys(false, swapClass); // set display to none, even if the css class was not loaded before
 
 		return function(entering) {
             if (entering) {
