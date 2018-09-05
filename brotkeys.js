@@ -15,6 +15,8 @@ class HotkeyManager {
         this.HOMEROW_CHARS = ['f', 'j', 'd', 's', 'g', 'h', 'k','l'];
         // characters that are used before deciding to make the word longer, as a second choice after all homerow combinations have been used
         this.OTHER_OKAY_CHARS  = ['q','w','e','r','t','u','i','o','p','v','n','m'];
+        // css class of the buttons that appear as link hints
+		this.LINKHINT_STYLE_CLASS = "eric-reverse";
 
         // internal config. It doesn't matter what you set here
         this.AUTOGEN_LINKHINT_ATTRIBUTE = "brotkeysid"; // used for counting all anchors. Throwaway property.
@@ -278,7 +280,7 @@ class HotkeyManager {
             let f = new Function("document.querySelector(\"["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+curr_bk_elem_id+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
-            HotkeyManager.addBeautifulLinkHint(item, link_hint_text, swap_class); // add the graphics
+            this.addBeautifulLinkHint(item, link_hint_text, swap_class); // add the graphics
             brotkeys_elem_id++;
 		}.bind(this));
 	}
@@ -464,8 +466,8 @@ class HotkeyManager {
 		element.text += " [" + linkHint + "] ";
 	}
 	
-	static addBeautifulLinkHint(element, linkHint, swap_class){
-		element.innerHTML += `<kbd class=\"${swap_class} eric-reverse\">${linkHint}</kbd>`
+	addBeautifulLinkHint(element, linkHint, swap_class){
+		element.innerHTML += `<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS}\">${linkHint}</kbd>`
 	}
 	
 	// uses global variable _brotkeysjs__src__path;
@@ -513,6 +515,7 @@ class HotkeyManager {
 	genToggleKeysOnNotify(swapClass){
 		if(swapClass===undefined){swapClass = this.SWAP_CLASS_NAME_DEFAULT;}
 		this.loadNeededJSCSSForStyleSwapping();
+		HotkeyManager.showKeys(false, swapClass); // set display to none, even if the css class was not loaded before
 
 		return function(entering) {
             if (entering) {
@@ -613,6 +616,5 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
 /*
 	TODO: make link hints overlay if possible, instead of shifting content.
 	TODO: make sure link hints also show over images
-	TODO: documentation, example page
-	TODO: document how to change eric-reverse looks
+	TODO: Should I have the css in this file so I can get rid of loadNeededCSSJS?
 */

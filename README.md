@@ -168,6 +168,21 @@ The third line is whether capitalization in words matters. True if it does not m
 
 See also further below about an obscure setting called `ignore_ShiftAndCapslock_inWordMode`.
 
+### Modify The Link Hints Style
+
+Simply provide your own css class and set `manager.LINKHINT_STYLE_CLASS` to it.
+The currently used one:
+
+```css
+kbd.eric-reverse {
+	background-color: #fff;
+	color: #333;
+	border-style: dashed;
+}
+```
+
+
+
 ## Implementation Details
 
 If you want to know what's going on, without reading the actual code.  
@@ -229,6 +244,10 @@ Does not unregister the listener to hotkeys.js - it simply does not act on the e
 ### hotkeys_init
 
 There's no harm in calling this, I think. But there's also no reason to. It's called from the constructor.
+
+### loadNeededJSCSS()
+
+This loads the css needed for toggling the style of the link hints when hiding them.
 
 ### Anything Else
 
