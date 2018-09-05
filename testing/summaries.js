@@ -17,9 +17,9 @@ manager.loadNeededJSCSSForStyleSwapping();
 // please notify me on entering and leaving fmode
 var notifyFModeFunc = function(entering){
 	if(entering){
-		manager.showKeys(true, "LB-SS-swap1");
+		HotkeyManager.showKeys(true, "LB-SS-swap1");
 	} else {
-		manager.showKeys(false, "LB-SS-swap1");
+		HotkeyManager.showKeys(false, "LB-SS-swap1");
 	}
 };
 manager.setNotifyFModeFunction(notifyFModeFunc);

@@ -235,7 +235,7 @@ class HotkeyManager {
     // at time of writing this (24.08.2018), the only options are class_tagged (with class name BKH) and tag_anchor
 	autogenerate(generationTarget, /*optional*/ css_class_name) {
 		// use default GENERATION_CLASS_TAG unless the optional css_class_name parameter is specified
-		let generationClassTag = (css_class_name == undefined) ? this.GENERATION_CLASS_TAG : css_class_name;
+		let generationClassTag = (css_class_name === undefined) ? this.GENERATION_CLASS_TAG : css_class_name;
 		
         // fetch list of elements to be worked on
         let elems_to_gen;
@@ -273,7 +273,7 @@ class HotkeyManager {
             let f = new Function("document.querySelector(\"["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+curr_bk_elem_id+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
-            this.addBeautifulLinkHint(item, link_hint_text); // add the graphics
+            HotkeyManager.addBeautifulLinkHint(item, link_hint_text); // add the graphics
             brotkeys_elem_id++;
 		}.bind(this));
 	}
@@ -285,8 +285,7 @@ class HotkeyManager {
         homerow_chars = homerow_chars.filter(char => char !== this.F_MODE_PREFIX_CHAR);
         other_okay_chars = other_okay_chars.filter(char => char !== this.F_MODE_PREFIX_CHAR);
         // compute the minimal number of letters needed
-        const letters = homerow_chars.concat(other_okay_chars);
-        return letters;
+        return homerow_chars.concat(other_okay_chars);
 	}
 
 	/*int*/ computeMinLength(num_elems_to_gen_for, letters){
@@ -332,9 +331,7 @@ class HotkeyManager {
         let unavailable_words = Array.from(this.wordMap, ([word, action]) => word);
 		
         // compute an available word of minimal length, favoring the homerow chars.
-        let position = min_length-1;
-
-        // first, set up storage and an initial guess
+		// first, set up storage and an initial guess
         let word;
         // word is an array which contains the character index of each letter
         // noinspection EqualityComparisonWithCoercionJS
@@ -458,33 +455,32 @@ class HotkeyManager {
 	}
 
 	// adds the link hint as text, for debug purposes
-    addLinkHint(element, linkHint){
+    static addLinkHint(element, linkHint){
 		element.text += " [" + linkHint + "] ";
 	}
 	
-	addBeautifulLinkHint(element, linkHint){
+	static addBeautifulLinkHint(element, linkHint){
 		element.innerHTML += `<kbd class=\"LB-SS-swap1 eric-reverse\">${linkHint}</kbd>`
 	}
 	
 	// uses global variable _brotkeysjs__src__path;
 	loadNeededJSCSSForStyleSwapping(){
-		var scripts = document.getElementsByTagName("script");
 		var jsFileLocation = _brotkeysjs__src__path.replace('brotkeys.js','');
 		
 		// taken from http://www.javascriptkit.com/javatutors/loadjavascriptcss.shtml
 		function loadjscssfile(filename, filetype){
-			if (filetype=="js"){ //if filename is a external JavaScript file
-				var fileref=document.createElement('script')
-				fileref.setAttribute("type","text/javascript")
+			if (filetype==="js"){ //if filename is a external JavaScript file
+				let fileref=document.createElement('script');
+				fileref.setAttribute("type","text/javascript");
 				fileref.setAttribute("src", filename)
 			}
-			else if (filetype=="css"){ //if filename is an external CSS file
-				var fileref=document.createElement("link")
-				fileref.setAttribute("rel", "stylesheet")
-				fileref.setAttribute("type", "text/css")
+			else if (filetype==="css"){ //if filename is an external CSS file
+				let fileref=document.createElement("link");
+				fileref.setAttribute("rel", "stylesheet");
+				fileref.setAttribute("type", "text/css");
 				fileref.setAttribute("href", filename)
 			}
-			if (typeof fileref!="undefined")
+			if ((typeof fileref)!=undefined)
 				document.getElementsByTagName("head")[0].appendChild(fileref)
 		}
 		/* 
@@ -495,8 +491,8 @@ class HotkeyManager {
 		loadjscssfile(jsFileLocation+"keys.css", "css");
 	}
 	
-	showKeys(pls_show_keys, of_class){
-		var new_display = pls_show_keys ? "inline" : "none";
+	static showKeys(pls_show_keys, of_class){
+		let new_display = pls_show_keys ? "inline" : "none";
 		let elem;
 		for (elem of document.getElementsByClassName(of_class)) {elem.style.display=new_display;}
 	}
@@ -507,9 +503,9 @@ class HotkeyManager {
 	genToggleKeysOnNotify(swapClass){
 		return function(entering) {
             if (entering) {
-                this.showKeys(true, swapClass);
+                HotkeyManager.showKeys(true, swapClass);
             } else {
-                this.showKeys(false, swapClass);
+                HotkeyManager.showKeys(false, swapClass);
             }
         }.bind(this);
 	}
