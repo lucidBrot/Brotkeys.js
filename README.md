@@ -15,6 +15,8 @@ Brotkeys builds upon [jaywcjaylove's hotkeys](https://github.com/jaywcjlove/hotk
 
 ### [Autogeneration - click me to jump ahead](#autogeneration) 
 
+### [Quick Start Guide](https://eric.mink.li/publications/brotkeys_quickstart.html)
+
 ### Basic Example
 
 Executes the given javascript function when the word is typed. There is no way to start a new word while typing the old word. So `hello` will show a popup saying "general kenobi!", but if you start typing `about` and then decide to switch to `hello`, there won't be any reaction to `abhello`.
