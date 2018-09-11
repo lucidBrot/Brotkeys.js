@@ -20,6 +20,9 @@ class HotkeyManager {
 
         // internal config. It doesn't matter what you set here
         this.AUTOGEN_LINKHINT_ATTRIBUTE = "brotkeysid"; // used for counting all anchors. Throwaway property.
+        // and then we add a UID to it so it works even with multiple HotkeyManagers
+        this.UID = HotkeyManager.genHotkeyManagerUID();
+        this.AUTOGEN_LINKHINT_ATTRIBUTE += this.UID;
         this.SWAP_CLASS_NAME_DEFAULT = "LB-SS-swap1"; // used for all link hints in order to swap them on and off if no other are provided
 
         // fake enum for adding more options later, for autogeneration of link hints
@@ -270,18 +273,15 @@ class HotkeyManager {
         const num_elems_to_gen_for = elems_to_gen.length + this.wordMap.size; // need to fit at least this many link hints
 		let letters = this.computeLettersArray();
 		let min_len = this.computeMinLength(num_elems_to_gen_for, letters);
-		let brotkeys_elem_id = 0;
 		// For each element, create a tag
         [...elems_to_gen].forEach(function(item, index){
-			const curr_bk_elem_id = brotkeys_elem_id;
             // noinspection JSPotentiallyInvalidUsageOfClassThis
             let link_hint_text = this.generateLinkHintText(item, min_len, letters); // generate link hint
 			item.setAttribute(this.AUTOGEN_LINKHINT_ATTRIBUTE, index); // give it a unique id based on index
-            let f = new Function("document.querySelector(\"["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+curr_bk_elem_id+"']\").click();");
+            let f = new Function("document.querySelector(\"["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+index+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
             this.addBeautifulLinkHint(item, link_hint_text, swap_class); // add the graphics
-            brotkeys_elem_id++;
 		}.bind(this));
 		HotkeyManager.showKeys(false, swap_class); // set display to none, even if the css class was not loaded before
 	}
@@ -525,6 +525,17 @@ class HotkeyManager {
             }
         }.bind(this);
 	}
+
+    // generate an identifier unique among HotkeyManagers
+    static genHotkeyManagerUID(){
+        let prev = HotkeyManager.latest_uid
+        if (prev == undefined) {
+            prev = -1;
+        }
+        let uid = prev + 1;
+        HotkeyManager.latest_uid = uid;
+        return uid;
+    }
 	
 }
 
