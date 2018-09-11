@@ -325,7 +325,9 @@ Overwrites `leave_f_mode`, so if for some reason, you're overwriting that as wel
 
 ### disable
 
-Does not unregister the listener to hotkeys.js - it simply does not act on the events until activated again using `enable_f_mode` with either true or false as parameter. (True if you want F_Mode).
+Does not unregister the listener to hotkeys.js - it simply does not act on the events until activated again using `enable_f_mode` with either true or false as parameter. (True if you want F_Mode).  
+
+If you're disabling the manager with a user-typed-word-reaction, you want to also `manager.leave_f_mode()`, else the link hints remain visible.
 
 ### hotkeys_init
 
