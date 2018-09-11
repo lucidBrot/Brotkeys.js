@@ -633,4 +633,7 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
 	TODO: make link hints overlay if possible, instead of shifting content.
 	TODO: make sure link hints also show over images
 	TODO: make sure loading with a nonexistent css class like LB-Swap-Class still works. And get rid of the fact that every successive call seems to load eric-reverse yet again.
+    TODO: scrolling with j and k
+    TODO: add option to explicitly ignore specific elements for autogeneration
+    TODO: add option to explicitly ignore elements for autogeneration that already have a brotkeysid from that manager
 */
