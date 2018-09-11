@@ -57,6 +57,10 @@ class HotkeyManager {
 
 		// this was not yet loaded
         this.__loadNeededJSCSSForStyleSwapping_alreadyLoaded = false;
+
+
+        // set this to 0 if you need autogenerate to start overwriting previously generated link hints
+        this.global_index = 0;
 		
 		this.hotkeys_init();
 	}
@@ -277,11 +281,12 @@ class HotkeyManager {
         [...elems_to_gen].forEach(function(item, index){
             // noinspection JSPotentiallyInvalidUsageOfClassThis
             let link_hint_text = this.generateLinkHintText(item, min_len, letters); // generate link hint
-			item.setAttribute(this.AUTOGEN_LINKHINT_ATTRIBUTE, index); // give it a unique id based on index
-            let f = new Function("document.querySelector(\"["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+index+"']\").click();");
+			item.setAttribute(this.AUTOGEN_LINKHINT_ATTRIBUTE, this.global_index); // give it a unique id based on index
+            let f = new Function("document.querySelector(\"["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+this.global_index+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
             this.addBeautifulLinkHint(item, link_hint_text, swap_class); // add the graphics
+            this.global_index++; // increase global index that persists over multiple autogenerations
 		}.bind(this));
 		HotkeyManager.showKeys(false, swap_class); // set display to none, even if the css class was not loaded before
 	}
