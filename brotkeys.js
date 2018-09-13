@@ -290,6 +290,54 @@ class HotkeyManager {
 		}.bind(this));
 		HotkeyManager.showKeys(false, swap_class); // set display to none, even if the css class was not loaded before
 	}
+	
+	// same as autogenerate, but you can specify the ID of an element where it calls getElementsByClassName
+	autogenerateWithin(containerID, generationTarget, /*optional*/ css_class_name, /*optional*/ arbitrary_swap_class_name) {
+		let container = document.getElementById(containerID);
+		
+		// use default GENERATION_CLASS_TAG unless the optional css_class_name parameter is specified
+		let generationClassTag = (css_class_name === undefined) ? this.GENERATION_CLASS_TAG : css_class_name;
+		let swap_class = (arbitrary_swap_class_name === undefined) ? this.SWAP_CLASS_NAME_DEFAULT : arbitrary_swap_class_name;
+		
+        // fetch list of elements to be worked on
+        let elems_to_gen;
+        let g;
+        fetching_elems:
+        {
+			// every bit corresponds to one flag. Test if the relevant bit is set.
+			// noinspection JSBitwiseOperatorUsage
+            if ((generationTarget & this.GenerationEnum.class_tagged) === this.GenerationEnum.class_tagged) {
+				elems_to_gen = container.getElementsByClassName(generationClassTag);
+				g = "classes tagged "+generationClassTag;
+				break fetching_elems;
+			}
+			// noinspection JSBitwiseOperatorUsage
+            if ((generationTarget & this.GenerationEnum.tag_anchor) === this.GenerationEnum.tag_anchor) {
+                elems_to_gen = container.getElementsByTagName("a");
+                g = "anchor elements";
+                break fetching_elems;
+			}
+			/*default:*/ break fetching_elems;
+    	}
+    	// fetching elements done. They are now in elems_to_gen, which is a HTMLCollection
+		this.log_verbose("Autogenerating for the "+g+". ");
+
+        const num_elems_to_gen_for = elems_to_gen.length + this.wordMap.size; // need to fit at least this many link hints
+		let letters = this.computeLettersArray();
+		let min_len = this.computeMinLength(num_elems_to_gen_for, letters);
+		// For each element, create a tag
+        [...elems_to_gen].forEach(function(item, index){
+            // noinspection JSPotentiallyInvalidUsageOfClassThis
+            let link_hint_text = this.generateLinkHintText(item, min_len, letters); // generate link hint
+			item.setAttribute(this.AUTOGEN_LINKHINT_ATTRIBUTE, this.global_index); // give it a unique id based on index
+            let f = new Function(`document.getElementById(${containerID}).querySelector(\"[`+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+this.global_index+"']\").click();");
+            this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
+            // noinspection JSPotentiallyInvalidUsageOfClassThis
+            this.addBeautifulLinkHint(item, link_hint_text, swap_class); // add the graphics
+            this.global_index++; // increase global index that persists over multiple autogenerations
+		}.bind(this));
+		HotkeyManager.showKeys(false, swap_class); // set display to none, even if the css class was not loaded before
+	}
 
 	computeLettersArray(){
 		let homerow_chars = this.HOMEROW_CHARS;
