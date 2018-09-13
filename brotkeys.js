@@ -292,7 +292,7 @@ class HotkeyManager {
 	}
 	
 	// same as autogenerate, but you can specify the ID of an element where it calls getElementsByClassName
-	autogenerateWithin(containerID, generationTarget, /*optional*/ css_class_name, /*optional*/ arbitrary_swap_class_name) {
+	autogenerateWithinId(containerID, generationTarget, /*optional*/ css_class_name, /*optional*/ arbitrary_swap_class_name) {
 		let container = document.getElementById(containerID);
 		
 		// use default GENERATION_CLASS_TAG unless the optional css_class_name parameter is specified
@@ -684,4 +684,5 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
     TODO: scrolling with j and k
     TODO: add option to explicitly ignore specific elements for autogeneration
     TODO: add option to explicitly ignore elements for autogeneration that already have a brotkeysid from that manager
+	TODO: document autogeneratewithinID
 */
