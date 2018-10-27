@@ -57,8 +57,8 @@ Because top is relative to the parent height and translateY is relative to the l
 So for text content, we can just inject
 
 ```html
-<span style="position:absolute;top:50%;transform:translateY(-50%)">
-<kbd class="{SWAP_CLASS} {LINKHINT_STYLE_CLASS}">
+<span style="position:relative;">
+<kbd class="{SWAP_CLASS} {LINKHINT_STYLE_CLASS}" style="position:absolute;top:50%;transform:translateY(-50%)">
      dt
 </kbd>
 </span>
@@ -69,6 +69,6 @@ in order to get <kbd>dt</kbd> as a link hint.
 
 *This solves the problem of showing link hints without moving the page content!*
 
-Regarding images, it's a bit harder since they would need an outer wrapper div or span that is relative. Modify the img tag itself to be absolute, and also have above code snippet in it (with or without the span part). If the image is not posidioned absolutely, the link hint will show up next to the image instead.
+Regarding images, it's a bit harder since they would need an outer wrapper div or span that is relative. Modify the img tag itself to be absolute, and also have above code snippet in it (with or without the span part). If the image is not positioned absolutely, the link hint will show up next to the image instead.
 
-That is also ok for the moment though.
+That is also ok for the moment though, since images will neeed their own case anyways.

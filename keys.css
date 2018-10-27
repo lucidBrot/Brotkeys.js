@@ -35,3 +35,14 @@ kbd.eric-btn-dark {
 	border: #333;
 	border-style: groove;
 }
+
+/* Used for overlaying the link hints instead of moving page content around when they appear */
+.overlay-container {
+	position: relative;
+}
+.overlay-hint {
+	position:absolute;
+	top:50%;
+	transform:translateY(-50%)
+	/*Move the center of the hint to the center of the parent's height by first placing the top of the hint there and then moving it by 50% of the hint upwards*/
+}
