@@ -1,4 +1,4 @@
-## for showing an image with a link hint
+## for showing an image with a link hint and for not moving text content when showing link hints
 
 ```html
 <div style="position:relative">
@@ -32,3 +32,43 @@ My task is thus to add a way to set this variable (which is not used anywhere el
 
 But what should be the default?
 I'll first code it as optional, and if it works well, absolute position should probably be the default.
+
+
+
+For within text, I can even place the parent container directly within the text:
+
+```javascript
+<a href="https://eric.mink.li/public_files/summaries/basisjahr/LinAlg_Singulärwertzerlegung.jpg" brotkeysid0="30">Singular Value Decomposition Flowchart<span style="position:relative"><kbd class="LB-SS-swap1 eric-reverse" style="display: inline; position: absolute;">dt
+</kbd>    
+</span>
+</a>
+```
+
+Only issue is that it seems to be a bit lower like this... To make sure it's centered vertically, we need 
+
+```css
+position: absolute;
+top: 50%;
+transform: translateY(-50%)
+```
+
+Because top is relative to the parent height and translateY is relative to the link hint's height, thus moving its center to the center height of the parent.
+
+So for text content, we can just inject
+
+```html
+<span style="position:absolute;top:50%;transform:translateY(-50%)">
+<kbd class="{SWAP_CLASS} {LINKHINT_STYLE_CLASS}">
+     dt
+</kbd>
+</span>
+```
+
+into the actual link text innerHTML
+in order to get <kbd>dt</kbd> as a link hint.
+
+*This solves the problem of showing link hints without moving the page content!*
+
+Regarding images, it's a bit harder since they would need an outer wrapper div or span that is relative. Modify the img tag itself to be absolute, and also have above code snippet in it (with or without the span part). If the image is not posidioned absolutely, the link hint will show up next to the image instead.
+
+That is also ok for the moment though.
