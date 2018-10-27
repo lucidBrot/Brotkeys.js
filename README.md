@@ -201,6 +201,19 @@ And finally, the call to `autogenerate`.
 If you want to generate for anchors, you can pass `undefined` as the second argument. Otherwise the second argument is used as your class name that will be operated on.
 The third argument is replaced with `manager.SWAP_CLASS_NAME_DEFAULT` if you're passing `undefined`. It serves as the class name used for the link hint buttons that appear and disappear. Make sure it's the same as in `genToggleKeysOnNotify` if you have passed something there - and undefined if not.
 
+### Autogenerate Within ID
+
+The same thing as `autogenerate`, but only for all elements within a given container instead of for all elements within the document.
+
+```javascript
+autogenerateWithinId(containerId, generationTarget, /*optional*/ css_class_name, /*optional*/ arbitraty_swap_class_name)
+```
+
+`containerId` - String, ID of the container element
+For the other arguments, see in the section on [autogenerate](#autogeneration), which is right above this one.
+
+
+
 ### Multiple HotkeyManagers
 
 I don't know why you would do this, but that works as well. Just be aware that using `hotkeys.unbind('*')` would break the behaviour of the Managers (but that's always the case, not just when using multiple managers).  
