@@ -266,7 +266,7 @@ kbd.eric-reverse {
 
 ### OverlayMode
 
-The Link Hints can either show up _within_ the page content (text), or overlayed. By default, brotkeys.js uses overlayMode because that way, the content is not moved when the link hints appear. If you prefer the Link Hints to be directly embedded instead of using absolute positioning and a container element, you can do `manager.setOverlayMode(false)` before using it.
+The Link Hints can either show up _within_ the page content (text), or overlayed. By default, brotkeys.js uses overlayMode because that way, the content is not moved when the link hints appear. If you prefer the Link Hints to be directly embedded instead of using absolute positioning and a container element, you can do `manager.setOverlayMode(false)` before generating the link hints.
 
 ## Using Defer
 

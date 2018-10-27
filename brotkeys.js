@@ -696,7 +696,6 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
 }
 
 /*
-	TODO: make link hints overlay if possible, instead of shifting content.
 	TODO: make sure link hints also show over images
     TODO: scrolling with j and k
     TODO: add option to explicitly ignore specific elements for autogeneration
