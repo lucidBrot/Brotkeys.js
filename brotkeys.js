@@ -17,6 +17,9 @@ class HotkeyManager {
         this.OTHER_OKAY_CHARS  = ['q','w','e','r','t','u','i','o','p','v','n','m'];
         // css class of the buttons that appear as link hints
 		this.LINKHINT_STYLE_CLASS = "eric-reverse";
+        // css class added to the link hints when overlay mode is on. See notesToSelf/overlayMode.md
+        this.LINKHINT_OVERLAY_STYLE_CLASS = "overlay-hint"
+        this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS = "overlay-container"
 
         // internal config. It doesn't matter what you set here
         this.AUTOGEN_LINKHINT_ATTRIBUTE = "brotkeysid"; // used for counting all anchors. Throwaway property.
@@ -55,7 +58,10 @@ class HotkeyManager {
 		this.word_caseInsensitivity = true;
 		this.ignore_ShiftAndCapslock_inWordMode = true;
 
-		// this was not yet loaded
+        // config for using overlay mode or in-content mode. True for overlay mode.
+        this.setOverlayMode(true);
+
+		// this css was not yet loaded (assumption may be wrong if you have multiple managers. But that just means that it will be loaded multiple times, which shouldn't be too bad.)
         this.__loadNeededJSCSSForStyleSwapping_alreadyLoaded = false;
 
 
@@ -139,6 +145,9 @@ class HotkeyManager {
 			this.notify_f_mode_function(entering_fmode);
 		}
 	}
+    setOverlayMode(should_use_overlay_mode){
+        this.overlayMode = should_use_overlay_mode;
+    }
 	continue_link_access(key){
 		if(this.word_caseInsensitivity){key = key.toLowerCase();}
 		this.current_link_word += key;
@@ -521,7 +530,16 @@ class HotkeyManager {
 	}
 	
 	addBeautifulLinkHint(element, linkHint, swap_class){
-		element.innerHTML += `<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS}\">${linkHint}</kbd>`
+        if (!this.overlayMode){
+    		element.innerHTML += `<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS}\">${linkHint}</kbd>`;
+        } else {
+            // overlay Mode requires a container
+            element.innerHTML += `
+                <span class=\"${this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS}\">
+                <kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS} ${this.LINKHINT_OVERLAY_STYLE_CLASS}\">${linkHint}</kbd>
+                </span>
+                `;
+        }
 	}
 	
 	// uses global variable _brotkeysjs__src__path;
