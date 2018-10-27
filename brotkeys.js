@@ -700,4 +700,5 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
     TODO: scrolling with j and k
     TODO: add option to explicitly ignore specific elements for autogeneration
     TODO: add option to explicitly ignore elements for autogeneration that already have a brotkeysid from that manager
+    TODO: add space before link hint
 */
