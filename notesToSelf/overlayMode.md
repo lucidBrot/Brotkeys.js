@@ -72,3 +72,7 @@ in order to get <kbd>dt</kbd> as a link hint.
 Regarding images, it's a bit harder since they would need an outer wrapper div or span that is relative. Modify the img tag itself to be absolute, and also have above code snippet in it (with or without the span part). If the image is not positioned absolutely, the link hint will show up next to the image instead.
 
 That is also ok for the moment though, since images will neeed their own case anyways.
+
+
+
+For images, I either have to make the user tag them with a different class. But that's annoying for them. Or I just check whether the element to generate a link hint for is an image, and if yes launch my image mode. Next todo is finding out where exactly to perform that check.
