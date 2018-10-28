@@ -18,8 +18,8 @@ class HotkeyManager {
         // css class of the buttons that appear as link hints
 		this.LINKHINT_STYLE_CLASS = "eric-reverse";
         // css class added to the link hints when overlay mode is on. See notesToSelf/overlayMode.md
-        this.LINKHINT_OVERLAY_STYLE_CLASS = "overlay-hint"
-        this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS = "overlay-container"
+        this.LINKHINT_OVERLAY_STYLE_CLASS = "LB-overlay-link-hint"
+        this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS = "LB-overlay-container"
 
         // internal config. It doesn't matter what you set here
         this.AUTOGEN_LINKHINT_ATTRIBUTE = "brotkeysid"; // used for counting all anchors. Throwaway property.
