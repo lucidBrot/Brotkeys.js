@@ -578,7 +578,7 @@ class HotkeyManager {
 	static showKeys(pls_show_keys, of_class){
 		let new_display = pls_show_keys ? "inline" : "none";
 		let elem;
-		let elems = Array.document.getElementsByClassName(of_class);
+		let elems = Array.from(document.getElementsByClassName(of_class));
 		for (elem of elems) {elem.style.display=new_display;}
 	}
 
