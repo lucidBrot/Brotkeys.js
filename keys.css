@@ -38,8 +38,7 @@ kbd.eric-btn-dark {
 
 /* Used for overlaying the link hints instead of moving page content around when they appear */
 .LB-overlay-container {
-	/* originally I was using "relative" here, but inherit seems to work just as well in chrome and better in firefox */
-	position: inherit;
+	position: relative;
 }
 .LB-overlay-link-hint {
 	position:absolute;
