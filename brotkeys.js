@@ -287,7 +287,7 @@ class HotkeyManager {
 		let letters = this.computeLettersArray();
 		let min_len = this.computeMinLength(num_elems_to_gen_for, letters);
 		// For each element, create a tag
-        [...elems_to_gen].forEach(function(item, index){
+        [...Array.from(elems_to_gen)].forEach(function(item, index){
             // noinspection JSPotentiallyInvalidUsageOfClassThis
             let link_hint_text = this.generateLinkHintText(item, min_len, letters); // generate link hint
 			item.setAttribute(this.AUTOGEN_LINKHINT_ATTRIBUTE, this.global_index); // give it a unique id based on index
@@ -578,7 +578,8 @@ class HotkeyManager {
 	static showKeys(pls_show_keys, of_class){
 		let new_display = pls_show_keys ? "inline" : "none";
 		let elem;
-		for (elem of document.getElementsByClassName(of_class)) {elem.style.display=new_display;}
+		let elems = Array.document.getElementsByClassName(of_class);
+		for (elem of elems) {elem.style.display=new_display;}
 	}
 
 	// function which generates another function
