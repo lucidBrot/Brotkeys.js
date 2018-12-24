@@ -17,7 +17,7 @@ To do for that:
 
 * edit the css file such that the generated link hints will have this absolute css
 * change the way the generation of a link hint works (or provide an alternative version) for autogeneration from anchors or class-tags
-* change the way the generation of a link hint works (or provide an alternative version) for manual adding of a link hintgg
+* change the way the generation of a link hint works (or provide an alternative version) for manual adding of a link hint
 
 The autogeneration functions all eventually call this function to do that:
 
@@ -76,3 +76,23 @@ That is also ok for the moment though, since images will neeed their own case an
 
 
 For images, I either have to make the user tag them with a different class. But that's annoying for them. Or I just check whether the element to generate a link hint for is an image, and if yes launch my image mode. Next todo is finding out where exactly to perform that check.
+
+
+
+## For images
+
+generate an outer container with `position:relative;`. In it our image and the link hint.
+
+
+
+```html
+<span style="position:relative;" class="BHK" brotkeysid0="34"><img src="https://i.stack.imgur.com/GhBMm.png?s=48&amp;g=1">
+                
+                <kbd class="LB-SS-swap1 eric-reverse overlay-hint" style="display: inline; transform: translate(-150%, -50%);">dp</kbd>
+
+</span>
+```
+
+The `translate` in x direction is so that the link hint lies somewhat on the image. It would be nice if we could center it on the image but for that we'd need the image width. the y direction is because setting element-level transform overrides the `overlay-hint`class:![1545652686816](C:\Users\Eric\AppData\Roaming\Typora\typora-user-images\1545652686816.png)
+
+It would likely make sense to create an `overlay-image-hint` class and use that one instead of `overlay-hint`. The we could also drop the element-level transform. (note that the style is set by brotkeys anyways).
