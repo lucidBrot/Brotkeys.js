@@ -96,3 +96,11 @@ generate an outer container with `position:relative;`. In it our image and the l
 The `translate` in x direction is so that the link hint lies somewhat on the image. It would be nice if we could center it on the image but for that we'd need the image width. the y direction is because setting element-level transform overrides the `overlay-hint`class:![1545652686816](C:\Users\Eric\AppData\Roaming\Typora\typora-user-images\1545652686816.png)
 
 It would likely make sense to create an `overlay-image-hint` class and use that one instead of `overlay-hint`. The we could also drop the element-level transform. (note that the style is set by brotkeys anyways).
+
+https://stackoverflow.com/questions/15375022/center-image-vertically-horizontally-over-another-without-dimensions sounds promising for centering:
+Use `display:block` instead of `inline` (issues with brotkeys on change there? Again, argument for using different css class), `position:absolute` in the `kbd` and `position:relative` in the outer span. set `top`, `left`,`bottom`, `right` to 0, `z-index` to 1 and set a `center center` background.
+However, my content is not an image... can I still use background?
+
+
+
+Perhaps using `img...offsetHeight` from javascript makes it easier to center the kbd tag.
