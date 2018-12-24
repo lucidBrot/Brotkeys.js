@@ -104,3 +104,8 @@ However, my content is not an image... can I still use background?
 
 
 Perhaps using `img...offsetHeight` from javascript makes it easier to center the kbd tag.
+
+So todo: 
+
+* split autogenerate class "BHK" case into images and others
+* use size information to generate element-level image html css stuff
