@@ -30,7 +30,7 @@ class HotkeyManager {
 
         // fake enum for adding more options later, for autogeneration of link hints
         // never use 0 in enums, since it could compare as equal to null or undefined or false
-        this.GenerationEnum = Object.freeze({"tag_anchor":0b01,"class_tagged":0b10});
+        this.GenerationEnum = Object.freeze({"tag_anchor":0b01,"class_tagged":0b10, "tag_images":0b11});
         this.GENERATION_CLASS_TAG = "BKH"; // default for class_tagged is the class "BKH", but this could be easily changed
 
 		/** <CONFIG/> **/
@@ -254,7 +254,8 @@ class HotkeyManager {
 	
 	// Param: generationTarget can be any of the HotkeyManager.GenerationEnum, bitwise OR'ed together.
 	// If an element is of tag type <a> (anchor) AND of class "BKH", it will be treated only once, even if both are specified.
-    // at time of writing this (24.08.2018), the only options are class_tagged (with class name BKH) and tag_anchor
+    // at time of writing this (24.08.2018), the only options are class_tagged (with class name BKH) and tag_anchor.
+	// (24.12.2018 started adding tag_image)
 	autogenerate(generationTarget, /*optional*/ css_class_name, /*optional*/ arbitrary_swap_class_name) {
 		// use default GENERATION_CLASS_TAG unless the optional css_class_name parameter is specified
 		let generationClassTag = (css_class_name === undefined) ? this.GENERATION_CLASS_TAG : css_class_name;
@@ -268,6 +269,7 @@ class HotkeyManager {
 			// every bit corresponds to one flag. Test if the relevant bit is set.
 
             if (generationTarget === this.GenerationEnum.class_tagged) {
+				// TODO: split using Array.from(elems_to_gen).filter(function (el){return el instanceof HTMLImageElement;}) and rest.
 				elems_to_gen = document.getElementsByClassName(generationClassTag);
 				g = "classes tagged "+generationClassTag;
 				break fetching_elems;
@@ -278,6 +280,7 @@ class HotkeyManager {
                 g = "anchor elements";
                 break fetching_elems;
 			}
+			
 			/*default:*/ break fetching_elems;
     	}
     	// fetching elements done. They are now in elems_to_gen, which is a HTMLCollection
