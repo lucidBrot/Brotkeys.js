@@ -266,14 +266,14 @@ class HotkeyManager {
         fetching_elems:
         {
 			// every bit corresponds to one flag. Test if the relevant bit is set.
-			// noinspection JSBitwiseOperatorUsage
-            if ((generationTarget & this.GenerationEnum.class_tagged) === this.GenerationEnum.class_tagged) {
+
+            if (generationTarget === this.GenerationEnum.class_tagged) {
 				elems_to_gen = document.getElementsByClassName(generationClassTag);
 				g = "classes tagged "+generationClassTag;
 				break fetching_elems;
 			}
-			// noinspection JSBitwiseOperatorUsage
-            if ((generationTarget & this.GenerationEnum.tag_anchor) === this.GenerationEnum.tag_anchor) {
+
+            if (generationTarget=== this.GenerationEnum.tag_anchor) {
                 elems_to_gen = document.getElementsByTagName("a");
                 g = "anchor elements";
                 break fetching_elems;
