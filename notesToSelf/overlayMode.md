@@ -109,3 +109,20 @@ So todo:
 
 * split autogenerate class "BHK" case into images and others
 * use size information to generate element-level image html css stuff
+
+## actual todo
+
+For texts, we can also use a wrapper div, without issue:
+
+```html
+<div style="position:relative">
+    <a href="https://eric.mink.li/public_files/summaries/basisjahr/BP_Analysis.pdf" brotkeysid0="22">Summary
+                
+                </a>
+    <kbd class="LB-SS-swap1 eric-reverse" style="display: inline; position: absolute; top: 50%; left: 0px; transform:translateY(-50%)">dp</kbd>
+</div>
+```
+
+For images, we can do similarly, but without `top:50%; transform:translateY(-50%)`.
+
+So determine whether the element is an image. if yes, do not add that. In either case, create a wrapper div like above, and replace it in where the child is from.
