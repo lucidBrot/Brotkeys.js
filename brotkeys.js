@@ -572,6 +572,7 @@ class HotkeyManager {
 			element.innerHTML += `<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS}\">${linkHint}</kbd>`;
 		} else {
 			
+			let linkhint_overlay_class = undefined;
 			if (element instanceof HTMLImageElement){
 				linkhint_overlay_class = this.LINKHINT_OVERLAY_IMAGE_CLASS;
 			} else {
@@ -580,7 +581,6 @@ class HotkeyManager {
 			// assumes that the element has a parent - i.e. there is no link hint in the document itself
 			let parent = element.parentNode;
 			let elemHTML = element.outerHTML;
-			let linkhint_overlay_class = undefined;
 			if ( parent != undefined ){
 				element.outerHTML =
 					`<div class="${this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS}">
