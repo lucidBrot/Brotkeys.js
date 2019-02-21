@@ -44,7 +44,6 @@ kbd.eric-btn-dark {
 	position:absolute;
 	top:50%;
 	transform:translateY(-50%);
-	display:inline;
 }
 .LB-overlay-wrapped-link-hint-image {
 	position:absolute;
