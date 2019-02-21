@@ -18,9 +18,8 @@ class HotkeyManager {
         // css class of the buttons that appear as link hints
 		this.LINKHINT_STYLE_CLASS = "eric-reverse";
         // css class added to the link hints when overlay mode is on. See notesToSelf/overlayMode.md
-        this.LINKHINT_OVERLAY_STYLE_CLASS = "LB-overlay-link-hint";
         this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS = "LB-overlay-container";
-		// class added to the link hints that may make above two classes obsolete. Differ between images and not images
+		// Differ between images and not images
 		this.LINKHINT_OVERLAY_TEXT_CLASS = "LB-overlay-wrapped-link-hint-text";
 		this.LINKHINT_OVERLAY_IMAGE_CLASS = "LB-overlay-wrapped-link-hint-image";
 
@@ -33,7 +32,7 @@ class HotkeyManager {
 
         // fake enum for adding more options later, for autogeneration of link hints
         // never use 0 in enums, since it could compare as equal to null or undefined or false
-        this.GenerationEnum = Object.freeze({"tag_anchor":0b01,"class_tagged":0b10, "tag_images":0b11});
+        this.GenerationEnum = Object.freeze({"tag_anchor":0b01,"class_tagged":0b10});
         this.GENERATION_CLASS_TAG = "BKH"; // default for class_tagged is the class "BKH", but this could be easily changed
 
 		/** <CONFIG/> **/
@@ -258,7 +257,6 @@ class HotkeyManager {
 	// Param: generationTarget can be any of the HotkeyManager.GenerationEnum, bitwise OR'ed together.
 	// If an element is of tag type <a> (anchor) AND of class "BKH", it will be treated only once, even if both are specified.
     // at time of writing this (24.08.2018), the only options are class_tagged (with class name BKH) and tag_anchor.
-	// (24.12.2018 started adding tag_image)
 	autogenerate(generationTarget, /*optional*/ css_class_name, /*optional*/ arbitrary_swap_class_name) {
 		// use default GENERATION_CLASS_TAG unless the optional css_class_name parameter is specified
 		let generationClassTag = (css_class_name === undefined) ? this.GENERATION_CLASS_TAG : css_class_name;
@@ -535,6 +533,7 @@ class HotkeyManager {
 		element.text += " [" + linkHint + "] ";
 	}
 	
+	
 	// add link hint, also for images, by using a wrapper div
 	addWrappedLinkHint(element, linkHint, swap_class){
 		if (element == undefined){
@@ -551,7 +550,12 @@ class HotkeyManager {
 			// assumes that the element has a parent - i.e. there is no link hint in the document itself
 			let parent = element.parentNode;
 			let elemHTML = element.outerHTML;
-			let linkhint_overlay_class = this.LINKHINT_OVERLAY_TEXT_CLASS; // TODO: for images this should be IMAGE instead of TEXT
+			let linkhint_overlay_class = undefined;
+			if (element instanceof HTMLImageElement){
+				linkhint_overlay_class = this.LINKHINT_OVERLAY_IMAGE_CLASS;
+			} else {
+				linkhint_overlay_class = this.LINKHINT_OVERLAY_TEXT_CLASS; 
+			}
 			if ( parent != undefined ){
 				element.outerHTML =
 					`<div class="${this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS}">
