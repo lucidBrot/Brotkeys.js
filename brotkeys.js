@@ -1,4 +1,5 @@
 // (c) Eric Mink aka LucidBrot 2018
+// version 2.1.0
 
 // keep in mind that multiple HotkeyManagers only work as long as you don't unregister them via the hotkeys library.
 // and multiple managers might autogenerate the same link hints for different content.
@@ -748,7 +749,6 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
 }
 
 /*
-	TODO: make sure link hints also show over images
     TODO: scrolling with j and k
     TODO: add option to explicitly ignore specific elements for autogeneration
     TODO: add option to explicitly ignore elements for autogeneration that already have a brotkeysid from that manager
