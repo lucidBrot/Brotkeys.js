@@ -270,7 +270,6 @@ class HotkeyManager {
 			// every bit corresponds to one flag. Test if the relevant bit is set.
 
             if (generationTarget === this.GenerationEnum.class_tagged) {
-				// TODO: split using Array.from(elems_to_gen).filter(function (el){return el instanceof HTMLImageElement;}) and rest.
 				elems_to_gen = document.getElementsByClassName(generationClassTag);
 				g = "classes tagged "+generationClassTag;
 				break fetching_elems;
