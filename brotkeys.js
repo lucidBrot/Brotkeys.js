@@ -300,7 +300,7 @@ class HotkeyManager {
             let f = new Function("document.querySelector(\"["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+this.global_index+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
-            this.addBeautifulLinkHint(item, link_hint_text, swap_class); // add the graphics
+            this.addWrappedLinkHint(item, link_hint_text, swap_class); // add the graphics
             this.global_index++; // increase global index that persists over multiple autogenerations
 		}.bind(this));
 		HotkeyManager.showKeys(false, swap_class); // set display to none, even if the css class was not loaded before
@@ -348,7 +348,7 @@ class HotkeyManager {
             let f = new Function(`document.getElementById(\"${containerID}\").querySelector(\"[`+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+this.global_index+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
-            this.addBeautifulLinkHint(item, link_hint_text, swap_class); // add the graphics
+            this.addWrappedLinkHint(item, link_hint_text, swap_class); // add the graphics
             this.global_index++; // increase global index that persists over multiple autogenerations
 		}.bind(this));
 		HotkeyManager.showKeys(false, swap_class); // set display to none, even if the css class was not loaded before
@@ -535,21 +535,6 @@ class HotkeyManager {
 		element.text += " [" + linkHint + "] ";
 	}
 	
-	// [21.02.2019] hopefully soon™ legacy:
-	//              I am introducing a new function addWrappedLinkHint that should handle both text and images
-	addBeautifulLinkHint(element, linkHint, swap_class){
-        if (!this.overlayMode){
-    		element.innerHTML += `<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS}\">${linkHint}</kbd>`;
-        } else {
-            // overlay Mode requires a container
-            element.innerHTML += `
-                <span class=\"${this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS}\">
-                <kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS} ${this.LINKHINT_OVERLAY_STYLE_CLASS}\">${linkHint}</kbd>
-                </span>
-                `;
-        }
-	}
-	
 	// add link hint, also for images, by using a wrapper div
 	addWrappedLinkHint(element, linkHint, swap_class){
 		if (!this.overlayMode){
@@ -563,7 +548,7 @@ class HotkeyManager {
 			let elemHTML = element.outerHTML;
 			let linkhint_overlay_class = this.LINKHINT_OVERLAY_TEXT_CLASS; // TODO: for images this should be IMAGE instead of TEXT
 			parent.innerHTML +=
-			    `<div style="position:relative>"
+			    `<div style="${this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS}>"
 					${elemHTML}
 					<kbd class=\"${swap_class} ${linkhint_overlay_class}\">${linkHint}</kbd>
 				</div>`;
@@ -678,7 +663,7 @@ function brotkeys_autogenerate_manager_for_anchors(){
 	manager = new HotkeyManager(wordMap, interruptMap);
 	manager.interrupt_caseInsensitivity = false; // case sensitive
 	
-	// load neccessary css for style swapping (needed for showing link hints with the internal manager.addBeautifulLinkHints)
+	// load neccessary css for style swapping (needed for showing link hints with the internal manager.addBeautifulLinkHint or manager.addWrappedLinkHint)
 	manager.loadNeededJSCSSForStyleSwapping();
 	
 	// please notify me on entering and leaving fmode by calling this function.
