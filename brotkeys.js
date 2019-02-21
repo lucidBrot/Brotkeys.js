@@ -297,7 +297,7 @@ class HotkeyManager {
             let f = new Function("document.querySelector(\"["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+this.global_index+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
-            this.addWrappedLinkHint(item, link_hint_text, swap_class); // add the graphics
+            this.addGraphicLinkHint(item, link_hint_text, swap_class); // add the graphics
             this.global_index++; // increase global index that persists over multiple autogenerations
 		}.bind(this));
 		HotkeyManager.showKeys(false, swap_class); // set display to none, even if the css class was not loaded before
@@ -345,7 +345,7 @@ class HotkeyManager {
             let f = new Function(`document.getElementById(\"${containerID}\").querySelector(\"[`+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+this.global_index+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
-            this.addWrappedLinkHint(item, link_hint_text, swap_class); // add the graphics
+            this.addGraphicLinkHint(item, link_hint_text, swap_class); // add the graphics
             this.global_index++; // increase global index that persists over multiple autogenerations
 		}.bind(this));
 		HotkeyManager.showKeys(false, swap_class); // set display to none, even if the css class was not loaded before
@@ -532,6 +532,32 @@ class HotkeyManager {
 		element.text += " [" + linkHint + "] ";
 	}
 	
+	// "legacy" link hint that only works for text, but is simpler for text than the wrapped option
+	addBeautifulLinkHint(element, linkHint, swap_class){
+        if (!this.overlayMode){
+    		element.innerHTML += `<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS}\">${linkHint}</kbd>`;
+        } else {
+            // overlay Mode requires a container
+            element.innerHTML += `
+                <span class=\"${this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS}\">
+                <kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS} ${this.LINKHINT_OVERLAY_STYLE_CLASS}\">${linkHint}</kbd>
+                </span>
+                `;
+        }
+	}
+	
+	// decides whether to use addBeautifulLinkHint or addWrappedLinkHint
+	addGraphicLinkHint(element, linkHint, swap_class){
+		// Option 1: create a wrapper around the element, works also with images
+		// Option 2: just add the link hint directly
+		// Option 1 is more likely to break things, but is conventient because it is the same for images and for text.
+		// We use option 2 here, for text, and option 1 for images.
+		if (element instanceof HTMLImageElement){
+			this.addWrappedLinkHint(element, linkHint, swap_class);
+		} else {
+			this.addBeautifulLinkHint(element, linkHint, swap_class);
+		}
+	}
 	
 	// add link hint, also for images, by using a wrapper div
 	addWrappedLinkHint(element, linkHint, swap_class){
@@ -545,16 +571,16 @@ class HotkeyManager {
 			// of course, this does not work with images, but that's the user's choice when they deactivate overlayMode.
 			element.innerHTML += `<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS}\">${linkHint}</kbd>`;
 		} else {
-			// overlayMode requires a wrapper around the element
-			// assumes that the element has a parent - i.e. there is no link hint in the document itself
-			let parent = element.parentNode;
-			let elemHTML = element.outerHTML;
-			let linkhint_overlay_class = undefined;
+			
 			if (element instanceof HTMLImageElement){
 				linkhint_overlay_class = this.LINKHINT_OVERLAY_IMAGE_CLASS;
 			} else {
 				linkhint_overlay_class = this.LINKHINT_OVERLAY_TEXT_CLASS; 
 			}
+			// assumes that the element has a parent - i.e. there is no link hint in the document itself
+			let parent = element.parentNode;
+			let elemHTML = element.outerHTML;
+			let linkhint_overlay_class = undefined;
 			if ( parent != undefined ){
 				element.outerHTML =
 					`<div class="${this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS}">
