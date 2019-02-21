@@ -1,4 +1,5 @@
 // (c) Eric Mink aka LucidBrot 2018
+// version 2.1.0
 
 // keep in mind that multiple HotkeyManagers only work as long as you don't unregister them via the hotkeys library.
 // and multiple managers might autogenerate the same link hints for different content.
@@ -18,8 +19,10 @@ class HotkeyManager {
         // css class of the buttons that appear as link hints
 		this.LINKHINT_STYLE_CLASS = "eric-reverse";
         // css class added to the link hints when overlay mode is on. See notesToSelf/overlayMode.md
-        this.LINKHINT_OVERLAY_STYLE_CLASS = "LB-overlay-link-hint"
-        this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS = "LB-overlay-container"
+        this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS = "LB-overlay-container";
+		// Differ between images and not images
+		this.LINKHINT_OVERLAY_TEXT_CLASS = "LB-overlay-wrapped-link-hint-text";
+		this.LINKHINT_OVERLAY_IMAGE_CLASS = "LB-overlay-wrapped-link-hint-image";
 
         // internal config. It doesn't matter what you set here
         this.AUTOGEN_LINKHINT_ATTRIBUTE = "brotkeysid"; // used for counting all anchors. Throwaway property.
@@ -254,7 +257,7 @@ class HotkeyManager {
 	
 	// Param: generationTarget can be any of the HotkeyManager.GenerationEnum, bitwise OR'ed together.
 	// If an element is of tag type <a> (anchor) AND of class "BKH", it will be treated only once, even if both are specified.
-    // at time of writing this (24.08.2018), the only options are class_tagged (with class name BKH) and tag_anchor
+    // at time of writing this (24.08.2018), the only options are class_tagged (with class name BKH) and tag_anchor.
 	autogenerate(generationTarget, /*optional*/ css_class_name, /*optional*/ arbitrary_swap_class_name) {
 		// use default GENERATION_CLASS_TAG unless the optional css_class_name parameter is specified
 		let generationClassTag = (css_class_name === undefined) ? this.GENERATION_CLASS_TAG : css_class_name;
@@ -266,18 +269,19 @@ class HotkeyManager {
         fetching_elems:
         {
 			// every bit corresponds to one flag. Test if the relevant bit is set.
-			// noinspection JSBitwiseOperatorUsage
-            if ((generationTarget & this.GenerationEnum.class_tagged) === this.GenerationEnum.class_tagged) {
+
+            if (generationTarget === this.GenerationEnum.class_tagged) {
 				elems_to_gen = document.getElementsByClassName(generationClassTag);
 				g = "classes tagged "+generationClassTag;
 				break fetching_elems;
 			}
-			// noinspection JSBitwiseOperatorUsage
-            if ((generationTarget & this.GenerationEnum.tag_anchor) === this.GenerationEnum.tag_anchor) {
+
+            if (generationTarget=== this.GenerationEnum.tag_anchor) {
                 elems_to_gen = document.getElementsByTagName("a");
                 g = "anchor elements";
                 break fetching_elems;
 			}
+			
 			/*default:*/ break fetching_elems;
     	}
     	// fetching elements done. They are now in elems_to_gen, which is a HTMLCollection
@@ -287,14 +291,14 @@ class HotkeyManager {
 		let letters = this.computeLettersArray();
 		let min_len = this.computeMinLength(num_elems_to_gen_for, letters);
 		// For each element, create a tag
-        [...elems_to_gen].forEach(function(item, index){
+        [...Array.from(elems_to_gen)].forEach(function(item, index){
             // noinspection JSPotentiallyInvalidUsageOfClassThis
             let link_hint_text = this.generateLinkHintText(item, min_len, letters); // generate link hint
 			item.setAttribute(this.AUTOGEN_LINKHINT_ATTRIBUTE, this.global_index); // give it a unique id based on index
             let f = new Function("document.querySelector(\"["+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+this.global_index+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
-            this.addBeautifulLinkHint(item, link_hint_text, swap_class); // add the graphics
+            this.addGraphicLinkHint(item, link_hint_text, swap_class); // add the graphics
             this.global_index++; // increase global index that persists over multiple autogenerations
 		}.bind(this));
 		HotkeyManager.showKeys(false, swap_class); // set display to none, even if the css class was not loaded before
@@ -335,14 +339,14 @@ class HotkeyManager {
 		let letters = this.computeLettersArray();
 		let min_len = this.computeMinLength(num_elems_to_gen_for, letters);
 		// For each element, create a tag
-        [...elems_to_gen].forEach(function(item, index){
+        [...Array.from(elems_to_gen)].forEach(function(item, index){
             // noinspection JSPotentiallyInvalidUsageOfClassThis
             let link_hint_text = this.generateLinkHintText(item, min_len, letters); // generate link hint
 			item.setAttribute(this.AUTOGEN_LINKHINT_ATTRIBUTE, this.global_index); // give it a unique id based on index
             let f = new Function(`document.getElementById(\"${containerID}\").querySelector(\"[`+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+this.global_index+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
-            this.addBeautifulLinkHint(item, link_hint_text, swap_class); // add the graphics
+            this.addGraphicLinkHint(item, link_hint_text, swap_class); // add the graphics
             this.global_index++; // increase global index that persists over multiple autogenerations
 		}.bind(this));
 		HotkeyManager.showKeys(false, swap_class); // set display to none, even if the css class was not loaded before
@@ -529,6 +533,7 @@ class HotkeyManager {
 		element.text += " [" + linkHint + "] ";
 	}
 	
+	// "legacy" link hint that only works for text, but is simpler for text than the wrapped option
 	addBeautifulLinkHint(element, linkHint, swap_class){
         if (!this.overlayMode){
     		element.innerHTML += `<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS}\">${linkHint}</kbd>`;
@@ -540,6 +545,53 @@ class HotkeyManager {
                 </span>
                 `;
         }
+	}
+	
+	// decides whether to use addBeautifulLinkHint or addWrappedLinkHint
+	addGraphicLinkHint(element, linkHint, swap_class){
+		// Option 1: create a wrapper around the element, works also with images
+		// Option 2: just add the link hint directly
+		// Option 1 is more likely to break things, but is conventient because it is the same for images and for text.
+		// We use option 2 here, for text, and option 1 for images.
+		if (element instanceof HTMLImageElement){
+			this.addWrappedLinkHint(element, linkHint, swap_class);
+		} else {
+			this.addBeautifulLinkHint(element, linkHint, swap_class);
+		}
+	}
+	
+	// add link hint, also for images, by using a wrapper div
+	addWrappedLinkHint(element, linkHint, swap_class){
+		if (element == undefined){
+			this.log_error("Element is null! Element: \n"+element);
+			return;
+		}
+		
+		if (!this.overlayMode){
+			// simply show link hint within text
+			// of course, this does not work with images, but that's the user's choice when they deactivate overlayMode.
+			element.innerHTML += `<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS}\">${linkHint}</kbd>`;
+		} else {
+			
+			let linkhint_overlay_class = undefined;
+			if (element instanceof HTMLImageElement){
+				linkhint_overlay_class = this.LINKHINT_OVERLAY_IMAGE_CLASS;
+			} else {
+				linkhint_overlay_class = this.LINKHINT_OVERLAY_TEXT_CLASS; 
+			}
+			// assumes that the element has a parent - i.e. there is no link hint in the document itself
+			let parent = element.parentNode;
+			let elemHTML = element.outerHTML;
+			if ( parent != undefined ){
+				element.outerHTML =
+					`<div class="${this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS}">
+						${elemHTML}
+						<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS} ${linkhint_overlay_class}\">${linkHint}</kbd>
+					</div>`;
+			} else {
+				this.log_error("Element's parent is null. Element: \n"+elemHTML);
+			}
+		}
 	}
 	
 	// uses global variable _brotkeysjs__src__path;
@@ -578,7 +630,8 @@ class HotkeyManager {
 	static showKeys(pls_show_keys, of_class){
 		let new_display = pls_show_keys ? "inline" : "none";
 		let elem;
-		for (elem of document.getElementsByClassName(of_class)) {elem.style.display=new_display;}
+		let elems = Array.from(document.getElementsByClassName(of_class));
+		for (elem of elems) {elem.style.display=new_display;}
 	}
 
 	// function which generates another function
@@ -648,7 +701,7 @@ function brotkeys_autogenerate_manager_for_anchors(){
 	manager = new HotkeyManager(wordMap, interruptMap);
 	manager.interrupt_caseInsensitivity = false; // case sensitive
 	
-	// load neccessary css for style swapping (needed for showing link hints with the internal manager.addBeautifulLinkHints)
+	// load neccessary css for style swapping (needed for showing link hints with the internal manager.addBeautifulLinkHint or manager.addWrappedLinkHint)
 	manager.loadNeededJSCSSForStyleSwapping();
 	
 	// please notify me on entering and leaving fmode by calling this function.
@@ -696,7 +749,6 @@ function brotkeys_autogenerate_manager_for_class_tag(css_class_name){
 }
 
 /*
-	TODO: make sure link hints also show over images
     TODO: scrolling with j and k
     TODO: add option to explicitly ignore specific elements for autogeneration
     TODO: add option to explicitly ignore elements for autogeneration that already have a brotkeysid from that manager
