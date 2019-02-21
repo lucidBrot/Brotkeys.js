@@ -18,8 +18,11 @@ class HotkeyManager {
         // css class of the buttons that appear as link hints
 		this.LINKHINT_STYLE_CLASS = "eric-reverse";
         // css class added to the link hints when overlay mode is on. See notesToSelf/overlayMode.md
-        this.LINKHINT_OVERLAY_STYLE_CLASS = "LB-overlay-link-hint"
-        this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS = "LB-overlay-container"
+        this.LINKHINT_OVERLAY_STYLE_CLASS = "LB-overlay-link-hint";
+        this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS = "LB-overlay-container";
+		// class added to the link hints that may make above two classes obsolete. Differ between images and not images
+		this.LINKHINT_OVERLAY_TEXT_CLASS = "LB-overlay-wrapped-link-hint-text";
+		this.LINKHINT_OVERLAY_IMAGE_CLASS = "LB-overlay-wrapped-link-hint-image";
 
         // internal config. It doesn't matter what you set here
         this.AUTOGEN_LINKHINT_ATTRIBUTE = "brotkeysid"; // used for counting all anchors. Throwaway property.
@@ -532,6 +535,8 @@ class HotkeyManager {
 		element.text += " [" + linkHint + "] ";
 	}
 	
+	// [21.02.2019] hopefully soon™ legacy:
+	//              I am introducing a new function addWrappedLinkHint that should handle both text and images
 	addBeautifulLinkHint(element, linkHint, swap_class){
         if (!this.overlayMode){
     		element.innerHTML += `<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS}\">${linkHint}</kbd>`;
@@ -543,6 +548,27 @@ class HotkeyManager {
                 </span>
                 `;
         }
+	}
+	
+	// add link hint, also for images, by using a wrapper div
+	addWrappedLinkHint(element, linkHint, swap_class){
+		if (!this.overlayMode){
+			// simply show link hint within text
+			// of course, this does not work with images, but that's the user's choice when they deactivate overlayMode.
+			element.innerHTML += `<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS}\">${linkHint}</kbd>`;
+		} else {
+			// overlayMode requires a wrapper around the element
+			// assumes that the element has a parent - i.e. there is no link hint in the document itself
+			let parent = element.parentNode;
+			let elemHTML = element.outerHTML;
+			let linkhint_overlay_class = this.LINKHINT_OVERLAY_TEXT_CLASS; // TODO: for images this should be IMAGE instead of TEXT
+			parent.innerHTML +=
+			    `<div style="position:relative>"
+					${elemHTML}
+					<kbd class=\"${swap_class} ${linkhint_overlay_class}\">${linkHint}</kbd>
+				</div>`;
+			
+		}
 	}
 	
 	// uses global variable _brotkeysjs__src__path;

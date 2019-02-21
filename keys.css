@@ -47,3 +47,15 @@ kbd.eric-btn-dark {
 	z-index:10;
 	/*Move the center of the hint to the center of the parent's height by first placing the top of the hint there and then moving it by 50% of the hint upwards*/
 }
+.LB-overlay-wrapped-link-hint-text {
+	position:absolute;
+	top:50%;
+	left:0px;
+	transform:translateY(-50%);
+	display:inline;
+}
+.LB-overlay-wrapped-link-hint-image {
+	position:absolute;
+	top:0px;
+	left:0px;
+}
