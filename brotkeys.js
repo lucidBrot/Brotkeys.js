@@ -537,6 +537,11 @@ class HotkeyManager {
 	
 	// add link hint, also for images, by using a wrapper div
 	addWrappedLinkHint(element, linkHint, swap_class){
+		if (element == undefined){
+			this.log_error("Element is null! Element: \n"+element);
+			return;
+		}
+		
 		if (!this.overlayMode){
 			// simply show link hint within text
 			// of course, this does not work with images, but that's the user's choice when they deactivate overlayMode.
@@ -547,12 +552,15 @@ class HotkeyManager {
 			let parent = element.parentNode;
 			let elemHTML = element.outerHTML;
 			let linkhint_overlay_class = this.LINKHINT_OVERLAY_TEXT_CLASS; // TODO: for images this should be IMAGE instead of TEXT
-			parent.innerHTML +=
-			    `<div style="${this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS}>"
-					${elemHTML}
-					<kbd class=\"${swap_class} ${linkhint_overlay_class}\">${linkHint}</kbd>
-				</div>`;
-			
+			if ( parent != undefined ){
+				element.outerHTML =
+					`<div class="${this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS}">
+						${elemHTML}
+						<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS} ${linkhint_overlay_class}\">${linkHint}</kbd>
+					</div>`;
+			} else {
+				this.log_error("Element's parent is null. Element: \n"+elemHTML);
+			}
 		}
 	}
 	

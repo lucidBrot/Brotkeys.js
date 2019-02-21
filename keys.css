@@ -50,12 +50,10 @@ kbd.eric-btn-dark {
 .LB-overlay-wrapped-link-hint-text {
 	position:absolute;
 	top:50%;
-	left:0px;
 	transform:translateY(-50%);
 	display:inline;
 }
 .LB-overlay-wrapped-link-hint-image {
 	position:absolute;
 	top:0px;
-	left:0px;
 }
