@@ -17,7 +17,7 @@ Brotkeys builds upon [jaywcjaylove's hotkeys](https://github.com/jaywcjlove/hotk
 
 ### [Quick Start Guide - External Link](https://eric.mink.li/publications/brotkeys_quickstart.html)
 
-###[Scrolling Included - Jump to Example File](./examples/goodScrollManager.js)
+### [Scrolling Included - Jump to Example File](./examples/goodScrollManager.js)
 
 ### Basic Example
 
