@@ -13,9 +13,11 @@ Brotkeys builds upon [jaywcjaylove's hotkeys](https://github.com/jaywcjlove/hotk
 
 ## Usage
 
-### [Autogeneration - click me to jump ahead](#autogeneration) 
+### [Autogeneration - Click me to jump ahead](#autogeneration) 
 
-### [Quick Start Guide](https://eric.mink.li/publications/brotkeys_quickstart.html)
+### [Quick Start Guide - External Link](https://eric.mink.li/publications/brotkeys_quickstart.html)
+
+### [Scrolling Included - Jump to Example File](./examples/goodScrollManager.js)
 
 ### Basic Example
 

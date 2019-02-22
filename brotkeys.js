@@ -1,5 +1,5 @@
 // (c) Eric Mink aka LucidBrot 2018
-// version 2.1.0
+// version 2.1.1
 
 // keep in mind that multiple HotkeyManagers only work as long as you don't unregister them via the hotkeys library.
 // and multiple managers might autogenerate the same link hints for different content.
@@ -9,8 +9,9 @@ class HotkeyManager {
 		wordMap: Map of [strings that exist on the page, functions as reaction on the string]
 			If a word starts with another word, the shorter will not leave fmode when its function is called.
 		interruptMap: Map of [char, function]
+		ignoreTheseKeys: optional - an array of keys to completely ignore. e.g. ["j", 'K'] for scrolling
 	*/
-	constructor(wordMap, interruptMap){
+	constructor(wordMap, interruptMap, ignoreTheseKeys){
 		/** <CONFIG/> **/
         // characters that are preferredly used for autogenerating link hints
         this.HOMEROW_CHARS = ['f', 'j', 'd', 's', 'g', 'h', 'k','l'];
@@ -60,6 +61,15 @@ class HotkeyManager {
 		this.interrupt_caseInsensitivity = true;
 		this.word_caseInsensitivity = true;
 		this.ignore_ShiftAndCapslock_inWordMode = true;
+		
+		// ignore no keys by default. Lower case stored, behaviour is case-insensitive ignoring.
+		this.ignoredKeys = [];
+		if (ignoreTheseKeys != undefined) {
+			this.ignoredKeys = ignoreTheseKeys.map(function(b){return b.toLowerCase();});
+			const that = this;
+			this.HOMEROW_CHARS = this.HOMEROW_CHARS.filter(function(key){return !that.ignoredKeys.includes(key)});
+			this.OTHER_OKAY_CHARS = this.OTHER_OKAY_CHARS.filter(function(key){return !that.ignoredKeys.includes(key)});
+		}
 
         // config for using overlay mode or in-content mode. True for overlay mode.
         this.setOverlayMode(true);
@@ -222,7 +232,14 @@ class HotkeyManager {
         return (eventkey == this.F_MODE_PREFIX_CHAR);
 	}
 	
+	/*boolean*/ shouldIgnoreKey(eventkey){
+		return this.ignoredKeys.includes(eventkey.toLowerCase());
+	}
+	
 	hotkeys_handler_on_key_press(event, handler, that){
+		if(that.shouldIgnoreKey(event.key)){
+			return;
+		}
 		switch(that.mode){
 			case that.ModeEnum.f_mode:
 				if(that.shouldInterruptOnKey(event.key)){
