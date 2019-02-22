@@ -6,19 +6,16 @@
 */
 
 var manager;
-
-// Make sure the manager does not use j and k:
-// Define them as words, but don't act on them
-var wordMap = new Map([
-	["j", function(){}],
-	["k", function(){}],
-]);
+var wordMap = new Map([]);
 // these single characters that can interrupt at any time during the word-typing mode
 var interruptMap = new Map([
 	["D", function(){console.log("user disabled shortcuts"); manager.disable(); manager.leave_f_mode();}],
 ]);
 
-manager = new HotkeyManager(wordMap, interruptMap);
+// Make sure the manager does not use j and k (case-insensitive), using the optional third argument to the HotkeyManager constructor.
+let ignoredKeys = ['k', 'J']
+
+manager = new HotkeyManager(wordMap, interruptMap, ignoredKeys);
 manager.interrupt_caseInsensitivity = false;
 
 // please notify me on entering and leaving fmode simply by showing the link hints
