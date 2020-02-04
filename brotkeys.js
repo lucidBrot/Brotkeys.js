@@ -1,5 +1,5 @@
 // (c) Eric Mink aka LucidBrot 2018
-// version 2.1.1
+// version 2.2.0 
 
 // keep in mind that multiple HotkeyManagers only work as long as you don't unregister them via the hotkeys library.
 // and multiple managers might autogenerate the same link hints for different content.
@@ -650,6 +650,15 @@ class HotkeyManager {
 		let elems = Array.from(document.getElementsByClassName(of_class));
 		for (elem of elems) {elem.style.display=new_display;}
 	}
+
+
+    static getElementOrIframeBodyById(id){
+        let elem = document.getElementById(id);
+        if (elem.tagName == "IFRAME") {
+            return elem.contentWindow.document;
+        }
+        return elem.contentWindow.document;
+    }
 
 	// function which generates another function
 	// which takes a boolean whether we're entering f-mode, and then does the
