@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- EDIT TITLE HERE -->
+        <!-- EDIT Click Counter Link BELOW -->
+        <!-- EDIT .md.html link BELOW -->
+        <title>MF Access Bits</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="shortcut icon" type="image/ico" href="../favicon.ico"/>
+        <link rel="stylesheet" href="../libs/css_normalize/normalize.css">
+        <link rel="stylesheet" href="../libs/bootstrap/css/bootstrap.min.css">
+
+        <script>
+            function removeTopPaddingOfContent() {
+                try {
+                document.getElementById("ifrem").contentWindow.document.getElementById("write").style.paddingTop='0px';
+                } catch(err) {
+                    console.log("failed to remove padding of 'write' div within ifrem content");
+                }
+            }
+            function resizeIframe(obj) {
+                obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
+            }
+        </script>
+    </head>
+    <body style="border: 0;">
+        <!--
+		<header class="header">
+			<div class="container">
+				<p class="text-muted" style="text-align: right">
+					01.2020
+				</p>
+			</div>
+		</header>
+        -->
+        <iframe id="ifrem" src="./mf_classic_access_conditions.md.html" frameborder="0" scrolling="no" style="border:0; margin:0; padding:0; width:100%;" onload="resizeIframe(this);removeTopPaddingOfContent()">Your browser does not support iframes.</iframe>
+    </body>
+
+        <script src="../libs/jquery/jquery-3.3.1.min.js"></script>
+        <script src="../libs/bootstrap/js/bootstrap.min.js"></script>
+        <script src="../libs/jaywcjlove_hotkeys/hotkeys.min.js"></script>
+        <script src="../libs/lucidbrot_brotkeys/brotkeys.js"></script>
+		<script src="../keyjs/everywhere.js"></script>
+</html>
