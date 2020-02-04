@@ -1,5 +1,5 @@
 // (c) Eric Mink aka LucidBrot 2018
-// version 2.2.0 
+// version 2.2.1
 
 // keep in mind that multiple HotkeyManagers only work as long as you don't unregister them via the hotkeys library.
 // and multiple managers might autogenerate the same link hints for different content.
@@ -561,11 +561,7 @@ class HotkeyManager {
     		element.innerHTML += `<kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS}\">${linkHint}</kbd>`;
         } else {
             // overlay Mode requires a container
-            element.innerHTML += `
-                <span class=\"${this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS}\">
-                <kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS} ${this.LINKHINT_OVERLAY_STYLE_CLASS}\">${linkHint}</kbd>
-                </span>
-                `;
+            element.innerHTML += `<span class=\"${this.LINKHINT_OVERLAY_CONTAINER_STYLE_CLASS}\"><kbd class=\"${swap_class} ${this.LINKHINT_STYLE_CLASS} ${this.LINKHINT_OVERLAY_STYLE_CLASS}\">${linkHint}</kbd></span>`;
         }
 	}
 	
