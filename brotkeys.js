@@ -323,7 +323,7 @@ class HotkeyManager {
 	
 	// same as autogenerate, but you can specify the ID of an element where it calls getElementsByClassName
 	autogenerateWithinId(containerID, generationTarget, /*optional*/ css_class_name, /*optional*/ arbitrary_swap_class_name) {
-		let container = document.getElementById(containerID);
+		let container = getElementOrIframeBodyById(document, containerID);
 		
 		// use default GENERATION_CLASS_TAG unless the optional css_class_name parameter is specified
 		let generationClassTag = (css_class_name === undefined) ? this.GENERATION_CLASS_TAG : css_class_name;
@@ -360,7 +360,7 @@ class HotkeyManager {
             // noinspection JSPotentiallyInvalidUsageOfClassThis
             let link_hint_text = this.generateLinkHintText(item, min_len, letters); // generate link hint
 			item.setAttribute(this.AUTOGEN_LINKHINT_ATTRIBUTE, this.global_index); // give it a unique id based on index
-            let f = new Function(`document.getElementById(\"${containerID}\").querySelector(\"[`+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+this.global_index+"']\").click();");
+            let f = new Function(`getElementOrIframeBodyById(\"document, ${containerID}\").querySelector(\"[`+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+this.global_index+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
             this.addGraphicLinkHint(item, link_hint_text, swap_class); // add the graphics
@@ -652,12 +652,13 @@ class HotkeyManager {
 	}
 
 
-    static getElementOrIframeBodyById(id){
-        let elem = document.getElementById(id);
+    // gets element with id within doc
+    static getElementOrIframeBodyById(doc, id){
+        let elem = doc.getElementById(id);
         if (elem.tagName == "IFRAME") {
             return elem.contentWindow.document;
         }
-        return elem.contentWindow.document;
+        return elem;
     }
 
 	// function which generates another function
