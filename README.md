@@ -214,7 +214,15 @@ autogenerateWithinId(containerId, generationTarget, /*optional*/ css_class_name,
 `containerId` - String, ID of the container element
 For the other arguments, see in the section on [autogenerate](#autogeneration), which is right above this one.
 
+Sometimes, autogeneration will not traverse certain boundaries. For example, `container.getElementById()` will never find any elements that are within an iframe that is somewhere in the container. If you want to support your iframe (let's say it has id `ifrem`), you can do so by additionally running this after your other generations:  
 
+```javascript
+autogenerateWithinId("ifrem", manager.GenerationEnum.tag_anchor)
+```
+
+This example will add link hints to all `<a/>` tags within that iframe.
+
+Currently, iFrame support is limited to iframes that can be found with `document.getElementById()` - so  no nested iFrames.
 
 ### Multiple HotkeyManagers
 
