@@ -220,7 +220,7 @@ Sometimes, autogeneration will not traverse certain boundaries. For example, `co
 autogenerateWithinId("ifrem", manager.GenerationEnum.tag_anchor)
 ```
 
-This example will add link hints to all `<a/>` tags within that iframe.
+This example will add link hints to all `<a/>` tags within that iframe. Make sure that it is run only once the iframe content has been fully loaded. It seems a `defer` is not always enough, so use the iFrame's `onload` attribute.
 
 Currently, iFrame support is limited to iframes that can be found with `document.getElementById()` - so  no nested iFrames.
 
