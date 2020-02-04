@@ -365,7 +365,7 @@ class HotkeyManager {
             // noinspection JSPotentiallyInvalidUsageOfClassThis
             let link_hint_text = this.generateLinkHintText(item, min_len, letters); // generate link hint
 			item.setAttribute(this.AUTOGEN_LINKHINT_ATTRIBUTE, this.global_index); // give it a unique id based on index
-            let f = new Function(`HotkeyManager.getElementOrIframeBodyById(\"document, ${containerID}\").querySelector(\"[`+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+this.global_index+"']\").click();");
+            let f = new Function(`HotkeyManager.getElementOrIframeBodyById(document, \"${containerID}\").querySelector(\"[`+this.AUTOGEN_LINKHINT_ATTRIBUTE+"='"+this.global_index+"']\").click();");
             this.wordMap.set(link_hint_text, f);  // current value in wordMap is there, but action is undefined. Set up action.
             // noinspection JSPotentiallyInvalidUsageOfClassThis
             this.addGraphicLinkHint(item, link_hint_text, swap_class); // add the graphics
